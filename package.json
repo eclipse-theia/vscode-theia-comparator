@@ -1,0 +1,33 @@
+{
+  "name": "@eclipse-che/vscode-theia-comparator",
+  "publisher": "Eclipse Che",
+  "description": "Compare VS Code API and Theia API",
+  "license": "EPL-2.0",
+  "author": "Florent Benoit",
+  "files": [
+    "src"
+  ],
+  "bin": {
+    "compare-vscode-theia": "./lib/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "10.12.18",
+    "fs-extra": "7.0.1",
+    "graphql-request": "1.8.2",
+    "rimraf": "2.6.3",
+    "tslint": "5.10.0",
+    "typescript": "3.3.3",
+    "typescript-formatter": "7.2.2"
+  },
+  "scripts": {
+    "prepare": "yarn run clean && yarn run build",
+    "clean": "rimraf lib",
+    "format-code": "tsfmt -r",
+    "compile": "tsc",
+    "watch": "tsc -watch",
+    "tslint-fix": "tslint --fix --project .",
+    "tslint": "tslint --project .",
+    "build": "yarn run format-code && yarn run tslint-fix && yarn run tslint && yarn run compile",
+    "generate": "node lib/index.js"
+  }
+}
