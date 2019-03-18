@@ -2,4 +2,4 @@ lib
 .vscode
 .theia
 .che
-
+node_modules
