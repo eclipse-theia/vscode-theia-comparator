@@ -1,6 +1,7 @@
 {
   "name": "@eclipse-che/vscode-theia-comparator",
   "publisher": "Eclipse Che",
+  "version": "0.0.1",
   "description": "Compare VS Code API and Theia API",
   "license": "EPL-2.0",
   "author": "Florent Benoit",
