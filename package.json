@@ -5,6 +5,9 @@
   "description": "Compare VS Code API and Theia API",
   "license": "EPL-2.0",
   "author": "Florent Benoit",
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "src"
   ],
