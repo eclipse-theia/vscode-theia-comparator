@@ -24,16 +24,15 @@ jobs:
       - printf "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}\n" >> ~/.npmrc
       - npm version -no-git-tag-version "0.0.1-$(date +%s)"
     deploy:
-      - provider: releases
-        api-key: $GITHUB_TOKEN
-        name: status-$(date +'%F-%T')
-        file_glob: true
-        file: ./lib/status.html
-        skip_cleanup: true
-        on:
-          branch: master
       - provider: script
         script: npm publish --access public
         on:
           branch: master
         skip_cleanup: true
+      - provider: pages
+        skip-cleanup: true
+        github-token: $GITHUB_TOKEN
+        keep-history: true
+        local-dir: out
+        on:
+          branch: master

@@ -35,7 +35,8 @@ async function init() {
     // Generate HTML output
     const htmlGenerator = new HTMLGenerator(vsCodeEntries, theiaEntries, comparator.result());
     const content = htmlGenerator.generate();
-    const outputFile = path.resolve(__dirname, 'status.html');
+    await fs.ensureDir(path.resolve(__dirname, '../out'));
+    const outputFile = path.resolve(__dirname, '../out', 'status.html');
     fs.writeFileSync(outputFile, content);
     console.log(`✍️  HTML status written at ${outputFile}`);
 }

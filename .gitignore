@@ -3,3 +3,4 @@ lib
 .theia
 .che
 node_modules
+out
