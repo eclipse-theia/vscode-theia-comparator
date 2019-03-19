@@ -9,7 +9,8 @@
     "access": "public"
   },
   "files": [
-    "src"
+    "src",
+    "lib"
   ],
   "bin": {
     "compare-vscode-theia": "./lib/index.js"
