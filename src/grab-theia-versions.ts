@@ -80,7 +80,7 @@ export class GrabTheiaVersions {
             const url = GrabTheiaVersions.THEIA_URL_PATTERN.replace('${VERSION}', version);
             const content = await this.content.get(url);
             await fs.writeFile(filePath, content);
-            const paths = [path.resolve('conf', 'vscode-theia.d.ts'), filePath];
+            const paths = [path.resolve(__dirname, '../conf', 'vscode-theia.d.ts'), filePath];
             const entry: ScannerEntry = { paths, version };
             return entry;
         }));
