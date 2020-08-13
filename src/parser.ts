@@ -22,7 +22,7 @@ export class Parser {
     serializeConstructorSymbol = (symbol: ts.Symbol): DocEntry =>
         ({
             name: symbol.getName(),
-            documentation: ts.displayPartsToString(symbol.getDocumentationComment(undefined)),
+            documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
             type: this.checker.typeToString(
                 this.checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration!)
             ),
@@ -34,7 +34,7 @@ export class Parser {
 
         const details = {
             name: symbol.getName(),
-            documentation: ts.displayPartsToString(symbol.getDocumentationComment(undefined)),
+            documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
             type: this.checker.typeToString(enumType),
             handleType: 'EnumDeclaration',
             members: []
@@ -79,7 +79,7 @@ export class Parser {
 
         const details: DocEntry = {
             name: symbol.getName(),
-            documentation: ts.displayPartsToString(symbol.getDocumentationComment(undefined)),
+            documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
             return: returnType,
             handleType: 'FunctionDeclaration',
             parameters: []
@@ -113,7 +113,7 @@ export class Parser {
 
         const details = {
             name: symbol.getName(),
-            documentation: ts.displayPartsToString(symbol.getDocumentationComment(undefined)),
+            documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
             type: this.checker.typeToString(interfaceType),
             handleType: 'InterfaceDeclaration',
             members: []
@@ -132,7 +132,7 @@ export class Parser {
             }
             memberDoc.type = this.syntaxKindToName(member.declarations[0].kind);
             try {
-                memberDoc.documentation = ts.displayPartsToString(member.getDocumentationComment(undefined));
+                memberDoc.documentation = ts.displayPartsToString(member.getDocumentationComment(this.checker));
             } catch (error) {
                 memberDoc.documentation = '';
             }
@@ -148,7 +148,7 @@ export class Parser {
 
         const details = {
             name: symbol.getName(),
-            documentation: ts.displayPartsToString(symbol.getDocumentationComment(undefined)),
+            documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
             type: this.checker.typeToString(interfaceType),
             handleType: 'TypeAliasDeclaration',
             unions: []
@@ -181,7 +181,7 @@ export class Parser {
         ({
             parameters: signature.parameters.map(this.serializeConstructorSymbol),
             /*returnType: checker.typeToString(signature.getReturnType())*/
-            /*documentation: ts.displayPartsToString(signature.getDocumentationComment(undefined))*/
+            /*documentation: ts.displayPartsToString(signature.getDocumentationComment(this.checker))*/
         })
 
     private getModifiers(member: ts.Symbol) {
@@ -225,7 +225,7 @@ export class Parser {
         const memberDeclarations: ts.Declaration[] = symbol.getDeclarations();
         if (memberDeclarations.length > 0) {
             const memberDoc: DocEntry = {};
-            memberDoc.documentation = ts.displayPartsToString(symbol.getDocumentationComment(undefined));
+            memberDoc.documentation = ts.displayPartsToString(symbol.getDocumentationComment(this.checker));
             memberDoc.name = symbol.name;
 
             const callSignature = this.getCallSignature(symbol);
@@ -287,7 +287,7 @@ export class Parser {
     private serializeClassSymbol(symbol: ts.Symbol): DocEntry {
         return {
             name: symbol.getName(),
-            documentation: ts.displayPartsToString(symbol.getDocumentationComment(undefined)),
+            documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
             type: this.checker.typeToString(
                 this.checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration!)
             ),
@@ -302,7 +302,7 @@ export class Parser {
 
         const details = {
             name: symbol.getName(),
-            documentation: ts.displayPartsToString(symbol.getDocumentationComment(undefined)),
+            documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
             type: this.checker.typeToString(variableType),
             handleType: 'VariableDeclaration'
         };
