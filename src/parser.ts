@@ -261,8 +261,8 @@ export class Parser {
         const properties = constructorType.getProperties();
         if (properties) {
             constructorType.getProperties().forEach(property => {
-                // Only add members, don't add non-member properties
-                if (this.getCallSignature(symbol)) {
+                // Don't add class prototype definitions
+                if (property.name !== 'prototype') {
 
                     this.addMemberDoc(details, property);
                 }
