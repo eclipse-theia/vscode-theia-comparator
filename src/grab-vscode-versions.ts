@@ -17,7 +17,8 @@ import { Content } from './content';
 
 export class GrabVSCodeVersions {
 
-    static readonly VSCODE_URL_PATTERN = 'https://raw.githubusercontent.com/Microsoft/vscode/${VERSION}/src/vs/vscode.d.ts';
+    static readonly VSCODE_URL_PATTERN_PRE_1_63 = 'https://raw.githubusercontent.com/Microsoft/vscode/${VERSION}/src/vs/vscode.d.ts';
+    static readonly VSCODE_URL_PATTERN = 'https://raw.githubusercontent.com/Microsoft/vscode/${VERSION}/src/vscode-dts/vscode.d.ts';
 
     private readonly content = new Content();
 
@@ -69,7 +70,7 @@ export class GrabVSCodeVersions {
                 versions.push(currVersion);
             }
         });
-        versions.unshift('master');
+        versions.unshift('main');
 
         // keep only 5 versions
         versions.length = 5;
@@ -83,7 +84,13 @@ export class GrabVSCodeVersions {
 
         const versionsPath = await Promise.all(versions.map(async version => {
             const filePath = path.resolve(__dirname, `vscode-${version}.d.ts`);
-            const url = GrabVSCodeVersions.VSCODE_URL_PATTERN.replace('${VERSION}', version);
+            // The repository location of the api definition file changed with VSCode 1.63
+          const major = parseInt(version.split('.')[0])
+          const minor = parseInt(version.split('.')[1])
+            const urlPattern = major === 1 && minor < 63
+                ? GrabVSCodeVersions.VSCODE_URL_PATTERN_PRE_1_63
+                : GrabVSCodeVersions.VSCODE_URL_PATTERN;
+            const url = urlPattern.replace('${VERSION}', version);
             const content = await this.content.get(url);
             await fs.writeFile(filePath, content);
             const entry: ScannerEntry = { path: filePath, version };

@@ -159,7 +159,7 @@ export class Comparator {
                             if (docEntryLatestVsCodeCommand.members && docEntryLatestVsCodeCommand.members.length > 0) {
                                 // ok so here search in all members if it's defined in each vscode version
                                 docEntryLatestVsCodeCommand.members.forEach(member => {
-                                    const searchedMember = inCurrent.members.find(currentMember =>
+                                    const searchedMember = inCurrent.members?.find(currentMember =>
                                         (currentMember.name === member.name));
 
                                     // it's there, add it
@@ -176,7 +176,7 @@ export class Comparator {
                             if (docEntryLatestVsCodeCommand.constructors && docEntryLatestVsCodeCommand.constructors.length > 0) {
                                 // ok so here search in all members if it's defined in each vscode version
                                 docEntryLatestVsCodeCommand.constructors.forEach(constructor => {
-                                    const searchedConstructor = inCurrent.constructors.find(currentConstructor =>
+                                    const searchedConstructor = inCurrent.constructors?.find(currentConstructor =>
                                         this.equalsConstructor(currentConstructor, constructor));
 
                                     // it's there, add it
@@ -193,7 +193,7 @@ export class Comparator {
                             if (docEntryLatestVsCodeCommand.unions && docEntryLatestVsCodeCommand.unions.length > 0) {
                                 // ok so here search in all unions if it's defined in each vscode version
                                 docEntryLatestVsCodeCommand.unions.forEach(union => {
-                                    const searchedUnion = inCurrent.unions.find(currentUnion =>
+                                    const searchedUnion = inCurrent.unions?.find(currentUnion =>
                                         currentUnion.name === union.name);
 
                                     // it's there, add it
@@ -267,7 +267,7 @@ export class Comparator {
                             if (docEntryLatestVsCodeCommand.members && docEntryLatestVsCodeCommand.members.length > 0) {
                                 // ok so here search in all members if it's defined in each vscode version
                                 docEntryLatestVsCodeCommand.members.forEach(member => {
-                                    const searchedMember = inCurrent.members.find(currentMember =>
+                                    const searchedMember = inCurrent.members?.find(currentMember =>
                                         (currentMember.name === member.name));
 
                                     // it's there, add it
@@ -283,7 +283,7 @@ export class Comparator {
                             if (docEntryLatestVsCodeCommand.constructors && docEntryLatestVsCodeCommand.constructors.length > 0) {
                                 // ok so here search in all constructors if it's defined in each vscode version
                                 docEntryLatestVsCodeCommand.constructors.forEach(constructor => {
-                                    const searchedConstrutor = inCurrent.constructors.find(currentConstructor =>
+                                    const searchedConstrutor = inCurrent.constructors?.find(currentConstructor =>
                                         this.equalsConstructor(currentConstructor, constructor));
 
                                     // it's there, add it
@@ -300,7 +300,7 @@ export class Comparator {
                             if (docEntryLatestVsCodeCommand.unions && docEntryLatestVsCodeCommand.unions.length > 0) {
                                 // ok so here search in all unions if it's defined in each vscode version
                                 docEntryLatestVsCodeCommand.unions.forEach(union => {
-                                    const searchedUnion = inCurrent.unions.find(currentUnion => currentUnion.name === this.updateThenable(union.name));
+                                    const searchedUnion = inCurrent.unions?.find(currentUnion => currentUnion.name === this.updateThenable(union.name));
 
                                     // it's there, add it
                                     if (searchedUnion) {
