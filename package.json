@@ -37,6 +37,7 @@
     "tslint-fix": "tslint --fix --project .",
     "tslint": "tslint --project .",
     "build": "yarn run format-code && yarn run tslint-fix && yarn run tslint && yarn run compile",
+    "ci": "yarn run tslint && yarn run compile",
     "generate": "node lib/index.js"
   }
 }

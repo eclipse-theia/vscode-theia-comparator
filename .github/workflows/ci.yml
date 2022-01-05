@@ -1,0 +1,16 @@
+name: Build code for PRs
+on: pull_request
+
+jobs:
+  api-report-master:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12
+      - name: Build
+        run: |
+          yarn --frozen-lockfile
+          yarn run ci
