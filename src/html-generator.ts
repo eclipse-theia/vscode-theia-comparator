@@ -37,42 +37,6 @@ export class HTMLGenerator {
         this.theiaEntries.forEach(theiaEntry => firstRow += `<div class="col ide">Theia ${theiaEntry.version}</div>`);
         this.vsCodeEntries.forEach(vsCodeEntry => firstRow += `<div class="col ide">VSCode ${vsCodeEntry.version}</div>`);
         firstRow += '</div>';
-
-        function handleTypeIcon(entry: DocEntry): string {
-            if (entry.handleType === 'ClassDeclaration') {
-                return '<i title="Class" class="fa fa-copyright"></i>';
-            } else if (entry.handleType === 'InterfaceDeclaration') {
-                return '<i title="Interface" class="fas fa-info-circle"></i>';
-            } else if (entry.handleType === 'EnumDeclaration') {
-                return '<i title="Enum" class="fas fa-list-ol"></i>';
-            } else if (entry.handleType === 'FunctionDeclaration') {
-                return '<i title="Function" class="fab fa-foursquare"></i>';
-            } else if (entry.handleType === 'VariableDeclaration') {
-                return '<i title="Variable" class="fab fa-vimeo"></i>';
-            } else if (entry.handleType === 'TypeAliasDeclaration') {
-                return '<i title="TypeAlias" class="fab fa-tumblr-square"></i>';
-            }
-
-            return `Unknown${entry.handleType}`;
-
-        }
-
-        function byKey(a: DocEntry, b: DocEntry): number {
-            return a.name.localeCompare(b.name);
-        }
-
-        function constructorPrettyName(constructor: DocEntry): string {
-            return constructor.parameters!.map(parameter => parameter.name).join('/');
-        }
-
-        function htmlEntities(content: string): string {
-            if (!content) {
-                return 'N/A';
-            }
-            return content.replace(/[\u00A0-\u9999<>\&]/gim, i =>
-                '&#' + i.charCodeAt(0) + ';');
-        }
-
         html += firstRow;
 
         // loop on result
@@ -80,58 +44,18 @@ export class HTMLGenerator {
 
             html += `<div class="row bg-warning"><div class="col-4">namespace/${namespaceKey}</div></div>`;
 
-            const commands = this.globalResult.get(namespaceKey).sort(byKey);
+            const commands = this.globalResult.get(namespaceKey).sort(this.byKey);
 
             commands.forEach(command => {
-                let row = `<div class="row bg-info"><div class="col-4 command" title="${htmlEntities(command.documentation)}">${handleTypeIcon(command)} <b>${command.name}</b></div>`;
-
-                command.includedIn.forEach(included => {
-                    row += '<div class="col ';
-                    let txt = '';
-                    if (included.available === 'N/A') {
-                        txt = 'N/A';
-                        row += 'bg-light';
-                    } else if (included.available === 'yes') {
-                        txt = '<i class="fa fa-check"></i>';
-                        row += 'bg-success';
-                    } else if (included.available === 'defined') {
-                        txt = '<i class="fa fa-check"></i>';
-                        row += 'bg-info';
-                    } else if (included.available === 'no') {
-                        txt = '<i class="fa fa-times"></i>';
-                        row += 'bg-danger';
-                    }
-
-                    row += `" title="${included.version}">${txt}</div>`;
-                });
-
+                let row = `<div class="row bg-info"><div class="col-4 command" title="${this.htmlEntities(command.documentation)}">${this.handleTypeIcon(command)} <b>${command.name}</b></div>`;
+                row += this.generateInclusionColumns(command);
                 row += '</div>';
 
                 if (command.constructors && command.constructors.length > 0 && command.includedIn[0].available === 'yes') {
 
                     command.constructors.forEach(constructor => {
-                        let subRow = `<div class="row bg-info"><div class="col-4 command">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;constructor(${constructorPrettyName(constructor)})</div>`;
-                        if (constructor.includedIn) {
-                            constructor.includedIn.forEach(included => {
-                                subRow += '<div class="col ';
-                                let txt = '';
-                                if (included.available === 'N/A') {
-                                    txt = 'N/A';
-                                    subRow += 'bg-light';
-                                } else if (included.available === 'yes') {
-                                    txt = '<i class="fa fa-check"></i>';
-                                    subRow += 'bg-success';
-                                } else if (included.available === 'defined') {
-                                    txt = '<i class="fa fa-check"></i>';
-                                    subRow += 'bg-info';
-                                } else if (included.available === 'no') {
-                                    txt = '<i class="fa fa-times"></i>';
-                                    subRow += 'bg-danger';
-                                }
-
-                                subRow += `" title="${included.version}">${txt}</div>`;
-                            });
-                        }
+                        let subRow = `<div class="row bg-info"><div class="col-4 command">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;constructor(${this.constructorPrettyName(constructor)})</div>`;
+                        subRow += this.generateInclusionColumns(constructor);
                         subRow += '</div>';
                         row += subRow;
 
@@ -143,28 +67,8 @@ export class HTMLGenerator {
                 if (command.members && command.members.length > 0 && command.includedIn[0].available === 'yes') {
 
                     command.members.forEach(member => {
-                        let subRow = `<div class="row bg-info"><div class="col-4 command" title="${htmlEntities(member.documentation)}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${member.name}</div>`;
-                        if (member.includedIn) {
-                            member.includedIn.forEach(included => {
-                                subRow += '<div class="col ';
-                                let txt = '';
-                                if (included.available === 'N/A') {
-                                    txt = 'N/A';
-                                    subRow += 'bg-light';
-                                } else if (included.available === 'defined') {
-                                    txt = '<i class="fa fa-check"></i>';
-                                    subRow += 'bg-info';
-                                } else if (included.available === 'yes') {
-                                    txt = '<i class="fa fa-check"></i>';
-                                    subRow += 'bg-success';
-                                } else if (included.available === 'no') {
-                                    txt = '<i class="fa fa-times"></i>';
-                                    subRow += 'bg-danger';
-                                }
-
-                                subRow += `" title="${included.version}">${txt}</div>`;
-                            });
-                        }
+                        let subRow = `<div class="row bg-info"><div class="col-4 command" title="${this.htmlEntities(member.documentation)}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${member.name}</div>`;
+                        subRow += this.generateInclusionColumns(member);
                         subRow += '</div>';
                         row += subRow;
 
@@ -177,27 +81,7 @@ export class HTMLGenerator {
 
                     command.unions.forEach(union => {
                         let subRow = `<div class="row bg-info"><div class="col-4 command">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${union.name}</div>`;
-                        if (union.includedIn) {
-                            union.includedIn.forEach(included => {
-                                subRow += '<div class="col ';
-                                let txt = '';
-                                if (included.available === 'N/A') {
-                                    txt = 'N/A';
-                                    subRow += 'bg-light';
-                                } else if (included.available === 'yes') {
-                                    txt = '<i class="fa fa-check"></i>';
-                                    subRow += 'bg-success';
-                                } else if (included.available === 'defined') {
-                                    txt = '<i class="fa fa-check"></i>';
-                                    subRow += 'bg-info';
-                                } else if (included.available === 'no') {
-                                    txt = '<i class="fa fa-times"></i>';
-                                    subRow += 'bg-danger';
-                                }
-
-                                subRow += `" title="${included.version}">${txt}</div>`;
-                            });
-                        }
+                        subRow += this.generateInclusionColumns(union);
                         subRow += '</div>';
                         row += subRow;
 
@@ -215,4 +99,65 @@ export class HTMLGenerator {
         return html;
     }
 
+    private handleTypeIcon(entry: DocEntry): string {
+        if (entry.handleType === 'ClassDeclaration') {
+            return '<i title="Class" class="fa fa-copyright"></i>';
+        } else if (entry.handleType === 'InterfaceDeclaration') {
+            return '<i title="Interface" class="fas fa-info-circle"></i>';
+        } else if (entry.handleType === 'EnumDeclaration') {
+            return '<i title="Enum" class="fas fa-list-ol"></i>';
+        } else if (entry.handleType === 'FunctionDeclaration') {
+            return '<i title="Function" class="fab fa-foursquare"></i>';
+        } else if (entry.handleType === 'VariableDeclaration') {
+            return '<i title="Variable" class="fab fa-vimeo"></i>';
+        } else if (entry.handleType === 'TypeAliasDeclaration') {
+            return '<i title="TypeAlias" class="fab fa-tumblr-square"></i>';
+        }
+
+        return `Unknown ${entry.handleType}`;
+    }
+
+    private byKey(a: DocEntry, b: DocEntry): number {
+        return a.name.localeCompare(b.name);
+    }
+
+    private constructorPrettyName(constructor: DocEntry): string {
+        return constructor.parameters!.map(parameter => parameter.name).join('/');
+    }
+
+    private htmlEntities(content: string): string {
+        if (!content) {
+            return 'N/A';
+        }
+        return content.replace(/[\u00A0-\u9999<>\&]/gim, i =>
+            '&#' + i.charCodeAt(0) + ';');
+    }
+
+    private generateInclusionColumns(element: DocEntry): string {
+        if (!element.includedIn) {
+            return '';
+        }
+        let columns = '';
+        element.includedIn.forEach(included => {
+            columns += '<div class="col ';
+            let txt = '';
+            if (included.available === 'N/A') {
+                txt = 'N/A';
+                columns += 'bg-light';
+            } else if (included.available === 'yes') {
+                txt = '<i class="fa fa-check"></i>';
+                columns += 'bg-success';
+            } else if (included.available === 'defined') {
+                txt = '<i class="fa fa-check"></i>';
+                columns += 'bg-info';
+            } else if (included.available === 'no') {
+                txt = '<i class="fa fa-times"></i>';
+                columns += 'bg-danger';
+            }
+
+            columns += `" title="${included.version}">${txt}</div>`;
+        });
+
+        return columns;
+    }
 }
