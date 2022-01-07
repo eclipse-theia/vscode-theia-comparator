@@ -746,9 +746,9 @@ by clients of this provider.
 *Note:* It is important that the metadata of the file that changed provides an
 updated `mtime` that advanced from the previous value in the {@link FileStat stat} and a
 correct `size` value. Otherwise there may be optimizations in place that will not show
-the change in an editor for example.">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onDidChangeFile</div><div class="col bg-success" title="theia/master"><i class="fa fa-check"></i></div><div class="col bg-success" title="theia/v1.21.0"><i class="fa fa-check"></i></div><div class="col bg-success" title="theia/v1.20.0"><i class="fa fa-check"></i></div><div class="col bg-info" title="vscode/main"><i class="fa fa-check"></i></div><div class="col bg-info" title="vscode/1.63.2"><i class="fa fa-check"></i></div><div class="col bg-info" title="vscode/1.62.3"><i class="fa fa-check"></i></div><div class="col bg-info" title="vscode/1.61.2"><i class="fa fa-check"></i></div><div class="col bg-info" title="vscode/1.60.2"><i class="fa fa-check"></i></div></div><div class="row bg-info"><div class="col-4 command" title="Subscribe to file change events in the file or folder denoted by `uri`. For folders,
+the change in an editor for example.">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onDidChangeFile</div><div class="col bg-success" title="theia/master"><i class="fa fa-check"></i></div><div class="col bg-success" title="theia/v1.21.0"><i class="fa fa-check"></i></div><div class="col bg-success" title="theia/v1.20.0"><i class="fa fa-check"></i></div><div class="col bg-info" title="vscode/main"><i class="fa fa-check"></i></div><div class="col bg-info" title="vscode/1.63.2"><i class="fa fa-check"></i></div><div class="col bg-info" title="vscode/1.62.3"><i class="fa fa-check"></i></div><div class="col bg-info" title="vscode/1.61.2"><i class="fa fa-check"></i></div><div class="col bg-info" title="vscode/1.60.2"><i class="fa fa-check"></i></div></div><div class="row bg-info"><div class="col-4 command" title="Subscribes to file change events in the file or folder denoted by `uri`. For folders,
 the option `recursive` indicates whether subfolders, sub-subfolders, etc. should
-be watched for file changes as well. When `recursive: false`, only changes to the
+be watched for file changes as well. With `recursive: false`, only changes to the
 files that are direct children of the folder should trigger an event.
 
 The `excludes` array is used to indicate paths that should be excluded from file
@@ -756,7 +756,7 @@ watching. It is typically derived from the `files.watcherExclude` setting that
 is configurable by the user. Each entry can be be:
 - the absolute path to exclude
 - a relative path to exclude (for example `build/output`)
-- a simple glob pattern (for example `**\build`, `output/**`)
+- a simple glob pattern (for example `**&#8203;/build`, `output/**`)
 
 It is the file system provider's job to call {@linkcode FileSystemProvider.onDidChangeFile onDidChangeFile}
 for every change given these rules. No event should be emitted for files that match any of the provided
