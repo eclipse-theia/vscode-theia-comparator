@@ -85,8 +85,8 @@ export class GrabVSCodeVersions {
         const versionsPath = await Promise.all(versions.map(async version => {
             const filePath = path.resolve(__dirname, `vscode-${version}.d.ts`);
             // The repository location of the api definition file changed with VSCode 1.63
-          const major = parseInt(version.split('.')[0])
-          const minor = parseInt(version.split('.')[1])
+            const major = parseInt(version.split('.')[0]);
+            const minor = parseInt(version.split('.')[1]);
             const urlPattern = major === 1 && minor < 63
                 ? GrabVSCodeVersions.VSCODE_URL_PATTERN_PRE_1_63
                 : GrabVSCodeVersions.VSCODE_URL_PATTERN;

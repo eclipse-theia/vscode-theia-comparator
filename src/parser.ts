@@ -9,7 +9,6 @@
 **********************************************************************/
 
 import * as ts from 'typescript';
-import * as fs from 'fs';
 import { DocEntry } from './doc-entry';
 
 export class Parser {
