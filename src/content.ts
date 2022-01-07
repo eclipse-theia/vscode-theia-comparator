@@ -9,11 +9,7 @@
 * SPDX-License-Identifier: EPL-2.0
 **********************************************************************/
 
-import * as path from 'path';
 import * as https from 'https';
-import { GraphQLClient } from 'graphql-request';
-import * as fs from 'fs-extra';
-import { ScannerEntry } from './scanner-entry';
 
 export class Content {
     public get(url: string) {

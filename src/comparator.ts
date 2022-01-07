@@ -283,11 +283,11 @@ export class Comparator {
                             if (docEntryLatestVsCodeCommand.constructors && docEntryLatestVsCodeCommand.constructors.length > 0) {
                                 // ok so here search in all constructors if it's defined in each vscode version
                                 docEntryLatestVsCodeCommand.constructors.forEach(constructor => {
-                                    const searchedConstrutor = inCurrent.constructors?.find(currentConstructor =>
+                                    const searchedConstructor = inCurrent.constructors?.find(currentConstructor =>
                                         this.equalsConstructor(currentConstructor, constructor));
 
                                     // it's there, add it
-                                    if (searchedConstrutor) {
+                                    if (searchedConstructor) {
                                         constructor.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: 'yes' });
                                     } else {
                                         constructor.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: 'no' });

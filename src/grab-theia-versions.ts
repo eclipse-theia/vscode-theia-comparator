@@ -9,7 +9,6 @@
 **********************************************************************/
 
 import * as path from 'path';
-import * as https from 'https';
 import { GraphQLClient } from 'graphql-request';
 import * as fs from 'fs-extra';
 import { ScannerEntry } from './scanner-entry';

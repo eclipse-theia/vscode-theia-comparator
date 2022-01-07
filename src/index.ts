@@ -11,7 +11,6 @@
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { ScannerEntry } from './scanner-entry';
 import { Comparator } from './comparator';
 import { HTMLGenerator } from './html-generator';
 import { GrabVSCodeVersions } from './grab-vscode-versions';
