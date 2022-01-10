@@ -52,3 +52,9 @@ The tool grabs files remotely, and checks the latest versions using the [GraphQL
     ✍️  HTML status written at /Users/benoitf/Documents/git/theia/theia-checker/lib/status.html
     ✨  Done in 10.51s.
     ```
+
+## Provide additional information
+
+The generator can add notes for any namespace, element or sub element.
+Notes are read from [conf/infos.yml](./conf/infos.yml).
+An example on how these are configured is given in [conf/infos.example.yml](./conf/infos.example.yml).

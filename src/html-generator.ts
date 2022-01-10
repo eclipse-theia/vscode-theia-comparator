@@ -10,10 +10,11 @@
 
 import { ScannerEntry } from './scanner-entry';
 import { DocEntry } from './doc-entry';
+import { Infos, resolveInfo } from './infos';
 
 export class HTMLGenerator {
 
-    constructor(private readonly vsCodeEntries: ScannerEntry[], private readonly theiaEntries: ScannerEntry[], private readonly globalResult: Map<string, DocEntry[]>) {
+    constructor(private readonly vsCodeEntries: ScannerEntry[], private readonly theiaEntries: ScannerEntry[], private readonly globalResult: Map<string, DocEntry[]>, private readonly infos: Infos) {
 
     }
 
@@ -30,25 +31,34 @@ export class HTMLGenerator {
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 </head>
 <body>
-<div class="container">
+<div class="container-fluid">
 `;
 
         let firstRow = '<div class="row  bg-primary"><div class="col-4 command">&nbsp;</div>';
-        this.theiaEntries.forEach(theiaEntry => firstRow += `<div class="col ide">Theia ${theiaEntry.version}</div>`);
-        this.vsCodeEntries.forEach(vsCodeEntry => firstRow += `<div class="col ide">VSCode ${vsCodeEntry.version}</div>`);
+        this.theiaEntries.forEach(theiaEntry => firstRow += `<div class="col ide" style="max-width: 90px;">Theia ${theiaEntry.version}</div>`);
+        this.vsCodeEntries.forEach(vsCodeEntry => firstRow += `<div class="col ide" style="max-width: 90px;">VSCode ${vsCodeEntry.version}</div>`);
+        firstRow += '<div class="col-auto">Note</div>';
         firstRow += '</div>';
         html += firstRow;
 
         // loop on result
         Array.from(this.globalResult.keys()).forEach(namespaceKey => {
 
-            html += `<div class="row bg-warning"><div class="col-4">namespace/${namespaceKey}</div></div>`;
+            html += `<div class="row bg-warning"><div class="col-4">namespace/${namespaceKey}</div>`;
+            const versionCount = this.theiaEntries.length + this.vsCodeEntries.length;
+            // Add empty cells to align namespace's notes with elements' notes
+            for (let i = 0; i < versionCount; i++) {
+                html += '<div class="col" style="max-width: 90px;"></div>';
+            }
+            html += this.generateNoteColumn(namespaceKey);
+            html += '</div>';
 
             const commands = this.globalResult.get(namespaceKey).sort(this.byKey);
 
             commands.forEach(command => {
                 let row = `<div class="row bg-info"><div class="col-4 command" title="${this.htmlEntities(command.documentation)}">${this.handleTypeIcon(command)} <b>${command.name}</b></div>`;
                 row += this.generateInclusionColumns(command);
+                row += this.generateNoteColumn(namespaceKey, command);
                 row += '</div>';
 
                 if (command.constructors && command.constructors.length > 0 && command.includedIn[0].available === 'yes') {
@@ -56,6 +66,7 @@ export class HTMLGenerator {
                     command.constructors.forEach(constructor => {
                         let subRow = `<div class="row bg-info"><div class="col-4 command">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;constructor(${this.constructorPrettyName(constructor)})</div>`;
                         subRow += this.generateInclusionColumns(constructor);
+                        subRow += this.generateNoteColumn(namespaceKey, command, constructor);
                         subRow += '</div>';
                         row += subRow;
 
@@ -69,6 +80,7 @@ export class HTMLGenerator {
                     command.members.forEach(member => {
                         let subRow = `<div class="row bg-info"><div class="col-4 command" title="${this.htmlEntities(member.documentation)}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${member.name}</div>`;
                         subRow += this.generateInclusionColumns(member);
+                        subRow += this.generateNoteColumn(namespaceKey, command, member);
                         subRow += '</div>';
                         row += subRow;
 
@@ -82,6 +94,7 @@ export class HTMLGenerator {
                     command.unions.forEach(union => {
                         let subRow = `<div class="row bg-info"><div class="col-4 command">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${union.name}</div>`;
                         subRow += this.generateInclusionColumns(union);
+                        subRow += this.generateNoteColumn(namespaceKey, command, union);
                         subRow += '</div>';
                         row += subRow;
 
@@ -155,9 +168,15 @@ export class HTMLGenerator {
                 columns += 'bg-danger';
             }
 
-            columns += `" title="${included.version}">${txt}</div>`;
+            columns += `" style="max-width: 90px;" title="${included.version}">${txt}</div>`;
         });
 
         return columns;
+    }
+
+    private generateNoteColumn(namespace: string, element?: DocEntry, subElement?: DocEntry): string {
+        const info = resolveInfo(this.infos, namespace, element?.name, subElement?.name);
+        const column = `<div class="col-auto">${info?._note ?? ''}</div>`;
+        return column;
     }
 }
