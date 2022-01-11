@@ -45,6 +45,15 @@ async function init() {
     const outputFile = path.resolve(__dirname, '../out', 'status.html');
     fs.writeFileSync(outputFile, content);
     console.log(`✍️  HTML status written at ${outputFile}`);
+
+    // Generate filtered HTML report only containing entries unsupported in at least one theia version
+    console.log('⚙️  Generating filtered HTML report...');
+    comparator.removeSupported();
+    const filteredHtmlGenerator = new HTMLGenerator(vsCodeEntries, theiaEntries, comparator.result(), infos);
+    const filteredContent = filteredHtmlGenerator.generate();
+    const filteredOutputFile = path.resolve(__dirname, '../out', 'filtered-status.html');
+    fs.writeFileSync(filteredOutputFile, filteredContent);
+    console.log(`✍️  Filtered HTML status written at ${filteredOutputFile}`);
 }
 
 if (!process.env.GITHUB_TOKEN) {
