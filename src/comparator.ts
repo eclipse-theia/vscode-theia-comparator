@@ -27,7 +27,7 @@ export class Comparator {
         return this.globalResult;
     }
 
-    init() {
+    init(): void {
 
         this.vsCodeEntries.forEach(vscodeEntry => {
             vscodeEntry.parser = new Parser();
@@ -65,14 +65,14 @@ export class Comparator {
 
     // now compare commands
 
-    updateThenable(value: string) {
+    updateThenable(value: string): string {
         if (value) {
             return value.replace(/Thenable/g, 'PromiseLike');
         }
         return '';
     }
 
-    compare() {
+    compare(): void {
 
         // init map with all entries of latest vsCode
         const latestParser = this.vsCodeEntries[0].parser;
@@ -319,5 +319,67 @@ export class Comparator {
             }
         });
 
+    }
+
+    /**
+     * Removes all fully supported entries from the result. Entries that have unsupported children are not removed.
+     */
+    removeSupported(): void {
+        const namespacesToRemove = [];
+        this.globalResult.forEach((entries, namespace) => {
+            // iterate backwards to allow deleting entries on the go without affecting the iteration
+            for (let i = entries.length - 1; i >= 0; i--) {
+                if (this.filterEntry(entries[i])) {
+                    entries.splice(i, 1);
+                }
+            }
+
+            // If no entries are left, the whole namespace can be removed
+            if (entries.length === 0) {
+                namespacesToRemove.push(namespace);
+            }
+        });
+
+        namespacesToRemove.forEach(namespace => this.globalResult.delete(namespace));
+    }
+
+    /**
+     * Filters the given entry. This removes all fully supported children in place!
+     *
+     * @param entry An entry directly contained in a namespace (e.g. class, interface, etc.)
+     * @returns true if the entry is fully supported and has no unsupported children and, thus, can be removed.
+     */
+    private filterEntry(entry: DocEntry): boolean {
+        // Remove all children that are supported in all theia versions
+        this.removeFullySupported(entry.constructors);
+        this.removeFullySupported(entry.members);
+        this.removeFullySupported(entry.unions);
+        const hasUnsupportedChildren = entry.constructors?.length > 0 || entry.members?.length > 0 || entry.unions?.length;
+        return !hasUnsupportedChildren && this.isFullySupported(entry);
+    }
+
+    private removeFullySupported(entries: DocEntry[] | undefined): void {
+        if (entries) {
+            // iterate backwards to allow deleting entries on the go without affecting the iteration
+            for (let i = entries.length - 1; i >= 0; i--) {
+                const entry = entries[i];
+                if (this.isFullySupported(entry)) {
+                    entries.splice(i, 1);
+                }
+            }
+        }
+    }
+
+    /**
+     * @returns true if the given entry (e.g. class, interface, member constructor) is supported in all Theia versions. Does not consider children.
+     */
+    private isFullySupported(entry: DocEntry): boolean {
+        return entry.includedIn && entry.includedIn.reduce((result, included) => {
+            // Only look at theia versions.
+            if (included.version.startsWith('theia/')) {
+                return result && included.available === 'yes';
+            }
+            return result;
+        }, true);
     }
 }

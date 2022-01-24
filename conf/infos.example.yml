@@ -1,0 +1,19 @@
+root:
+  # Note for namespace
+  _note: Sample note
+  # Add elements by their names
+  AuthenticationGetSessionOptions:
+    # Note for element (e.g. interface, class, ...)
+    _note: Great stuff
+    # Add sub elements by their names
+    forceNewSession:
+      # Note for sub element (e.g. constructor, member, method, ...)
+      _note: "https://example.com/theia/issues/11"
+  CodeAction:
+   _note: Great stuff
+   isPreferred:
+    _note: Test
+notebooks:
+  _note: Won't do
+  createNotebookController:
+   _note: Test

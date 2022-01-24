@@ -15,6 +15,7 @@ import { Comparator } from './comparator';
 import { HTMLGenerator } from './html-generator';
 import { GrabVSCodeVersions } from './grab-vscode-versions';
 import { GrabTheiaVersions } from './grab-theia-versions';
+import { parseInfos } from './infos';
 
 async function init() {
 
@@ -31,21 +32,38 @@ async function init() {
     comparator.init();
     comparator.compare();
 
+    // Parse additional information
+    console.log('⚙️  Parsing additional information from infos.yml...');
+    const infoFileContent = fs.readFileSync(path.resolve(__dirname, '..', 'conf', 'infos.yml'), 'utf-8');
+    const infos = parseInfos(infoFileContent);
+
     // Generate HTML output
-    const htmlGenerator = new HTMLGenerator(vsCodeEntries, theiaEntries, comparator.result());
+    console.log('⚙️  Generating HTML report...');
+    const htmlGenerator = new HTMLGenerator(vsCodeEntries, theiaEntries, comparator.result(), infos);
     const content = htmlGenerator.generate();
     await fs.ensureDir(path.resolve(__dirname, '../out'));
     const outputFile = path.resolve(__dirname, '../out', 'status.html');
     fs.writeFileSync(outputFile, content);
     console.log(`✍️  HTML status written at ${outputFile}`);
+
+    // Generate filtered HTML report only containing entries unsupported in at least one theia version
+    console.log('⚙️  Generating filtered HTML report...');
+    comparator.removeSupported();
+    const filteredHtmlGenerator = new HTMLGenerator(vsCodeEntries, theiaEntries, comparator.result(), infos);
+    const filteredContent = filteredHtmlGenerator.generate();
+    const filteredOutputFile = path.resolve(__dirname, '../out', 'filtered-status.html');
+    fs.writeFileSync(filteredOutputFile, filteredContent);
+    console.log(`✍️  Filtered HTML status written at ${filteredOutputFile}`);
 }
 
 if (!process.env.GITHUB_TOKEN) {
-    console.log('🚒 Missing GITHUB_TOKEN environment variable');
+    console.error('🚒 Missing GITHUB_TOKEN environment variable');
+    process.exit(1);
 } else {
 
     init().catch(err => {
-        console.log(`🚒 ${err}`);
+        console.error(`🚒 ${err}`);
+        process.exit(1);
     });
 
 }

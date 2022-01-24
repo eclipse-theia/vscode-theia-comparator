@@ -2,7 +2,6 @@
     "compilerOptions": {
         "strict": false,
         "experimentalDecorators": true,
-        "noUnusedLocals": false,
         "emitDecoratorMetadata": true,
         "downlevelIteration": true,
         "module": "commonjs",

@@ -1,0 +1,54 @@
+root:
+  AccessibilityInformation:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/9965">#9965</a>'
+  CodeAction:
+    isPreferred:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/9989">#9989</a>'
+    disabled:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/9989">#9989</a>'
+  CodeActionKind:
+    SourceFixAll:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/9991">#9991</a>'
+  CommentThread:
+    canReply:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/10002">#10002</a>'
+  ConfigurationScope:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10004">#10004</a>'
+  CustomDocumentOpenContext:
+    untitledDocumentData:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/10005">#10005</a>'
+  DebugProtocolBreakpoint:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10011">#10011</a>'
+  DebugProtocolSource:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10011">#10011</a>'
+  DebugSession:
+    workspaceFolder:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/10023">#10023</a>'
+  DocumentSymbolProviderMetadata:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10026">#10026</a>'
+  EvaluatableExpression:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10027">#10027</a>'
+  Extension:
+    extensionKind:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/10029">#10029</a>'
+    extensionMode:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/10201">#10201</a> (current impl is only a stub)'
+  ExtensionContext:
+    logUri:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/10033">#10033</a>'
+  InlineValue:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10028">#10028</a>'
+  InputBoxOptions:
+    title:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/10030">#10030</a>'
+  LinkedEditingRangeProvider:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10200">#10200</a>'
+  LinkedEditingRanges:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10200">#10200</a>'
+  TreeViewOptions:
+    canSelectMany:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/10102">#10102</a>'
+
+window:
+  registerWebviewViewProvider:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8740">#8740</a>'
