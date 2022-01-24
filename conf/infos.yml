@@ -49,6 +49,39 @@ root:
     canSelectMany:
       _note: '<a href="https://github.com/eclipse-theia/theia/issues/10102">#10102</a>'
 
+debug:
+  _note: '<a href="https://github.com/eclipse-theia/theia/issues/10661">#10661</a>'
+  addBreakpoints:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10661">#10661</a>'
+  asDebugSourceUri:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10661">#10661</a>'
+  removeBreakpoints:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10661">#10661</a>'
+  startDebugging:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10661">#10661</a>'
+  stopDebugging:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10661">#10661</a>'
+
+env:
+  _note: '<a href="https://github.com/eclipse-theia/theia/issues/10662">#10662</a>'
+  appHost:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10662">#10662</a>'
+  isNewAppInstall:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10662">#10662</a>'
+  isTelemetryEnabled:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10662">#10662</a>'
+  onDidChangeTelemetryEnabled:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10662">#10662</a>'
+  remoteName:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10662">#10662</a>'
+
 window:
   registerWebviewViewProvider:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/8740">#8740</a>'
+
+workspace:
+  _note: '<a href="https://github.com/eclipse-theia/theia/issues/10472">#10472</a>'
+  isTrusted:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10472">#10472</a>'
+  onDidGrantWorkspaceTrust:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10472">#10472</a>'
