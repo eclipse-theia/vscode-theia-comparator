@@ -78,3 +78,10 @@ env:
 window:
   registerWebviewViewProvider:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/8740">#8740</a>'
+
+workspace:
+  _note: '<a href="https://github.com/eclipse-theia/theia/issues/10472">#10472</a>'
+  isTrusted:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10472">#10472</a>'
+  onDidGrantWorkspaceTrust:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10472">#10472</a>'
