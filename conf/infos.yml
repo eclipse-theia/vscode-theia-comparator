@@ -45,6 +45,24 @@ root:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10200">#10200</a>'
   LinkedEditingRanges:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10200">#10200</a>'
+  TestController: 
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
+  TestItem: 
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
+  TestItemCollection: 
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
+  TestMessage: 
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
+  TestRun: 
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
+  TestRunProfile: 
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
+  TestRunProfileKind: 
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
+  TestRunRequest: 
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
+  TestTag: 
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
   TreeViewOptions:
     canSelectMany:
       _note: '<a href="https://github.com/eclipse-theia/theia/issues/10102">#10102</a>'
@@ -85,3 +103,8 @@ workspace:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10472">#10472</a>'
   onDidGrantWorkspaceTrust:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10472">#10472</a>'
+
+tests:
+  _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
+  createTestController: 
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
