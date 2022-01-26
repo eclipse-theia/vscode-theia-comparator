@@ -17,6 +17,8 @@ declare module '@theia/plugin' {
 
         export function getExtension<T>(extensionId: string): Extension<T> | undefined;
 
+        export let onDidChange: Event<void>;
+
         export let all: Extension<any>[];
     }
 
