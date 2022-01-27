@@ -66,6 +66,8 @@ root:
   TreeViewOptions:
     canSelectMany:
       _note: '<a href="https://github.com/eclipse-theia/theia/issues/10102">#10102</a>'
+  WebviewViewProvider:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8740">#8740</a>'
 
 debug:
   _note: '<a href="https://github.com/eclipse-theia/theia/issues/10661">#10661</a>'
