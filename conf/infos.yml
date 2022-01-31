@@ -36,6 +36,8 @@ root:
   ExtensionContext:
     logUri:
       _note: '<a href="https://github.com/eclipse-theia/theia/issues/10033">#10033</a>'
+  ExtensionTerminalOptions:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/6589">#6589</a>'
   InlineValue:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10028">#10028</a>'
   InputBoxOptions:
@@ -45,6 +47,44 @@ root:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10200">#10200</a>'
   LinkedEditingRanges:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10200">#10200</a>'
+  NotebookCell:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookCellData:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookCellExecution:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookCellExecutionSummary:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookCellKind:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookCellOutput:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookCellOutputItem:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookCellStatusBarAlignment:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookCellStatusBarItem:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookCellStatusBarItemProvider:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookController:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookControllerAffinity:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookData:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookDocument:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookDocumentContentOptions:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookEditor:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookRange:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookRendererMessaging:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  NotebookSerializer:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
   TestController: 
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
   TestItem: 
@@ -66,7 +106,11 @@ root:
   TreeViewOptions:
     canSelectMany:
       _note: '<a href="https://github.com/eclipse-theia/theia/issues/10102">#10102</a>'
+  WebviewView:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8740">#8740</a>'
   WebviewViewProvider:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8740">#8740</a>'
+  WebviewViewResolveContext:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/8740">#8740</a>'
 
 debug:
@@ -98,6 +142,8 @@ env:
 window:
   registerWebviewViewProvider:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/8740">#8740</a>'
+  createTerminal:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/6589">#6589</a>'
 
 workspace:
   _note: '<a href="https://github.com/eclipse-theia/theia/issues/10472">#10472</a>'
@@ -110,3 +156,12 @@ tests:
   _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
   createTestController: 
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
+
+notebooks:
+  _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  createNotebookController:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  createRendererMessaging:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  registerNotebookCellStatusBarItemProvider:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
