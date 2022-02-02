@@ -385,7 +385,37 @@ Open an untitled notebook. The editor will prompt the user for a file
 path when the document is to be saved."><i title="Function" class="fab fa-foursquare"></i> <b>openNotebookDocument</b></div><div class="col bg-danger" style="max-width: 90px;" title="theia/master"><i class="fa fa-times"></i></div><div class="col bg-danger" style="max-width: 90px;" title="theia/v1.22.1"><i class="fa fa-times"></i></div><div class="col bg-danger" style="max-width: 90px;" title="theia/v1.22.0"><i class="fa fa-times"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/main"><i class="fa fa-check"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/1.63.2"><i class="fa fa-check"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/1.62.3"><i class="fa fa-check"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/1.61.2"><i class="fa fa-check"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/1.60.2"><i class="fa fa-check"></i></div><div class="col-auto"></div></div><div class="row bg-info"><div class="col-4 command" title="Register a {@link NotebookSerializer notebook serializer}.
 
 A notebook serializer must be contributed through the `notebooks` extension point. When opening a notebook file, the editor will send
-the `onNotebook:&#60;notebookType&#62;` activation event, and extensions must register their serializer in return."><i title="Function" class="fab fa-foursquare"></i> <b>registerNotebookSerializer</b></div><div class="col bg-danger" style="max-width: 90px;" title="theia/master"><i class="fa fa-times"></i></div><div class="col bg-danger" style="max-width: 90px;" title="theia/v1.22.1"><i class="fa fa-times"></i></div><div class="col bg-danger" style="max-width: 90px;" title="theia/v1.22.0"><i class="fa fa-times"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/main"><i class="fa fa-check"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/1.63.2"><i class="fa fa-check"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/1.62.3"><i class="fa fa-check"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/1.61.2"><i class="fa fa-check"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/1.60.2"><i class="fa fa-check"></i></div><div class="col-auto"></div></div><div class="row bg-warning"><div class="col-4">namespace/languages</div><div class="col" style="max-width: 90px;"></div><div class="col" style="max-width: 90px;"></div><div class="col" style="max-width: 90px;"></div><div class="col" style="max-width: 90px;"></div><div class="col" style="max-width: 90px;"></div><div class="col" style="max-width: 90px;"></div><div class="col" style="max-width: 90px;"></div><div class="col" style="max-width: 90px;"></div><div class="col-auto"></div></div><div class="row bg-info"><div class="col-4 command" title="Register a code action provider.
+the `onNotebook:&#60;notebookType&#62;` activation event, and extensions must register their serializer in return."><i title="Function" class="fab fa-foursquare"></i> <b>registerNotebookSerializer</b></div><div class="col bg-danger" style="max-width: 90px;" title="theia/master"><i class="fa fa-times"></i></div><div class="col bg-danger" style="max-width: 90px;" title="theia/v1.22.1"><i class="fa fa-times"></i></div><div class="col bg-danger" style="max-width: 90px;" title="theia/v1.22.0"><i class="fa fa-times"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/main"><i class="fa fa-check"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/1.63.2"><i class="fa fa-check"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/1.62.3"><i class="fa fa-check"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/1.61.2"><i class="fa fa-check"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/1.60.2"><i class="fa fa-check"></i></div><div class="col-auto"></div></div><div class="row bg-info"><div class="col-4 command" title="This method replaces `deleteCount` {@link workspace.workspaceFolders workspace folders} starting at index `start`
+by an optional set of `workspaceFoldersToAdd` on the `vscode.workspace.workspaceFolders` array. This "splice"
+behavior can be used to add, remove and change workspace folders in a single operation.
+
+If the first workspace folder is added, removed or changed, the currently executing extensions (including the
+one that called this method) will be terminated and restarted so that the (deprecated) `rootPath` property is
+updated to point to the first workspace folder.
+
+Use the {@linkcode onDidChangeWorkspaceFolders onDidChangeWorkspaceFolders()} event to get notified when the
+workspace folders have been updated.
+
+**Example:** adding a new workspace folder at the end of workspace folders
+```typescript
+workspace.updateWorkspaceFolders(workspace.workspaceFolders ? workspace.workspaceFolders.length : 0, null, { uri: ...});
+```
+
+**Example:** removing the first workspace folder
+```typescript
+workspace.updateWorkspaceFolders(0, 1);
+```
+
+**Example:** replacing an existing workspace folder with a new one
+```typescript
+workspace.updateWorkspaceFolders(0, 1, { uri: ...});
+```
+
+It is valid to remove an existing workspace folder and add it again with a different name
+to rename that folder.
+
+**Note:** it is not valid to call {@link updateWorkspaceFolders updateWorkspaceFolders()} multiple times
+without waiting for the {@linkcode onDidChangeWorkspaceFolders onDidChangeWorkspaceFolders()} to fire."><i title="Function" class="fab fa-foursquare"></i> <b>updateWorkspaceFolders</b></div><div class="col bg-danger" style="max-width: 90px;" title="theia/master"><i class="fa fa-times"></i></div><div class="col bg-danger" style="max-width: 90px;" title="theia/v1.22.1"><i class="fa fa-times"></i></div><div class="col bg-danger" style="max-width: 90px;" title="theia/v1.22.0"><i class="fa fa-times"></i></div><div class="col bg-info" style="max-width: 90px;" title="vscode/main"><i class="fa fa-check"></i></div><div class="col bg-light" style="max-width: 90px;" title="vscode/1.63.2">N/A</div><div class="col bg-light" style="max-width: 90px;" title="vscode/1.62.3">N/A</div><div class="col bg-light" style="max-width: 90px;" title="vscode/1.61.2">N/A</div><div class="col bg-light" style="max-width: 90px;" title="vscode/1.60.2">N/A</div><div class="col-auto"></div></div><div class="row bg-warning"><div class="col-4">namespace/languages</div><div class="col" style="max-width: 90px;"></div><div class="col" style="max-width: 90px;"></div><div class="col" style="max-width: 90px;"></div><div class="col" style="max-width: 90px;"></div><div class="col" style="max-width: 90px;"></div><div class="col" style="max-width: 90px;"></div><div class="col" style="max-width: 90px;"></div><div class="col" style="max-width: 90px;"></div><div class="col-auto"></div></div><div class="row bg-info"><div class="col-4 command" title="Register a code action provider.
 
 Multiple providers can be registered for a language. In that case providers are asked in
 parallel and the results are merged. A failing provider (rejected promise or exception) will
