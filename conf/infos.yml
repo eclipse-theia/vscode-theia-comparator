@@ -1,6 +1,17 @@
 root:
   AccessibilityInformation:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/9965">#9965</a>'
+  AuthenticationGetSessionOptions:
+    forceNewSession:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/9345">#9345</a>'
+    silent:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/9345">#9345</a>'
+  AuthenticationProvider:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/9345">#9345</a>'
+  AuthenticationProviderAuthenticationSessionsChangeEvent:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/9345">#9345</a>'
+  AuthenticationProviderOptions:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/9345">#9345</a>'
   CodeAction:
     isPreferred:
       _note: '<a href="https://github.com/eclipse-theia/theia/issues/9989">#9989</a>'
@@ -165,3 +176,9 @@ notebooks:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
   registerNotebookCellStatusBarItemProvider:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+
+authentication:
+  getSession:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/9345">#9345</a>'
+  registerAuthenticationProvider:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/9345">#9345</a>'
