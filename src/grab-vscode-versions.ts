@@ -19,6 +19,9 @@ export class GrabVSCodeVersions {
 
     static readonly VSCODE_URL_PATTERN_PRE_1_63 = 'https://raw.githubusercontent.com/Microsoft/vscode/${VERSION}/src/vs/vscode.d.ts';
     static readonly VSCODE_URL_PATTERN = 'https://raw.githubusercontent.com/Microsoft/vscode/${VERSION}/src/vscode-dts/vscode.d.ts';
+    // Version that is officially supported
+    static readonly CURRENT_REFERENCE_VERSION = '1.53.2';
+    // Target version that will be officially supported next
     static readonly CURRENT_REFERENCE_TARGET_VERSION = '1.55.2';
 
     private readonly content = new Content();
@@ -80,6 +83,9 @@ export class GrabVSCodeVersions {
 
         // add current reference target version
         versions.push(GrabVSCodeVersions.CURRENT_REFERENCE_TARGET_VERSION);
+
+        // add current reference version
+        versions.push(GrabVSCodeVersions.CURRENT_REFERENCE_VERSION);
 
         return versions;
     }
