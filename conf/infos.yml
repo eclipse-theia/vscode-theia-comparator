@@ -35,9 +35,13 @@ root:
   DebugSession:
     workspaceFolder:
       _note: '<a href="https://github.com/eclipse-theia/theia/issues/10023">#10023</a>'
+    getDebugProtocolBreakpoint:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/10011">#10011</a>'
   DocumentSymbolProviderMetadata:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10026">#10026</a>'
   EvaluatableExpression:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10027">#10027</a>'
+  EvaluatableExpressionProvider:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10027">#10027</a>'
   Extension:
     extensionKind:
@@ -50,6 +54,16 @@ root:
   ExtensionTerminalOptions:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/6589">#6589</a>'
   InlineValue:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10028">#10028</a>'
+  InlineValueContext:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10028">#10028</a>'
+  InlineValueEvaluatableExpression:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10028">#10028</a>'
+  InlineValuesProvider:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10028">#10028</a>'
+  InlineValueText:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10028">#10028</a>'
+  InlineValueVariableLookup:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10028">#10028</a>'
   InputBoxOptions:
     title:
@@ -96,6 +110,12 @@ root:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
   NotebookSerializer:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  ProviderResult:
+    _note: '<a href="https://github.com/eclipse-theia/vscode-theia-comparator/issues/21">Comparator: #21</a>'
+    T:
+      _note: '<a href="https://github.com/eclipse-theia/vscode-theia-comparator/issues/21">Comparator: #21</a>'
+    Thenable:
+      _note: '<a href="https://github.com/eclipse-theia/vscode-theia-comparator/issues/21">Comparator: #21</a>'
   TestController: 
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
   TestItem: 
@@ -117,6 +137,8 @@ root:
   TreeViewOptions:
     canSelectMany:
       _note: '<a href="https://github.com/eclipse-theia/theia/issues/10102">#10102</a>'
+  Thenable:
+    _note: '<a href="https://github.com/eclipse-theia/vscode-theia-comparator/issues/21">Comparator: #21</a>'
   WebviewView:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/8740">#8740</a>'
   WebviewViewProvider:
@@ -167,6 +189,13 @@ tests:
   _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
   createTestController: 
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
+languages:
+  registerEvaluatableExpressionProvider:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10027">#10027</a>'
+  registerInlineValuesProvider:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10028">#10028</a>'
+  registerLinkedEditingRangeProvider:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10200">#10200</a>'
 
 notebooks:
   _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
