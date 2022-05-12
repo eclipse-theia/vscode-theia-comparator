@@ -48,11 +48,18 @@ root:
       _note: '<a href="https://github.com/eclipse-theia/theia/issues/10029">#10029</a>'
     extensionMode:
       _note: '<a href="https://github.com/eclipse-theia/theia/issues/10201">#10201</a> (current impl is only a stub)'
+    extensionUri:
+      _note: 'False positive?'
+  ExtensionKind:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10029">#10029</a>'
   ExtensionContext:
     logUri:
       _note: '<a href="https://github.com/eclipse-theia/theia/issues/10033">#10033</a>'
   ExtensionTerminalOptions:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/6589">#6589</a>'
+  FoldingRangeProvider:
+    onDidChangeFoldingRanges:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/11127">#11127</a>'
   InlineValue:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10028">#10028</a>'
   InlineValueContext:
@@ -72,6 +79,14 @@ root:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10200">#10200</a>'
   LinkedEditingRanges:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10200">#10200</a>'
+  MarkdownString:
+    _note: '<a href="https://github.com/eclipse-theia/theia/pull/11083">#11083</a>'
+    supportThemeIcons:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/11129">#11129</a>'
+    supportHtml:
+      _note: '<a href="https://github.com/eclipse-theia/theia/pull/11083">#11083</a>'
+    baseUri:
+      _note: '<a href="https://github.com/eclipse-theia/theia/pull/11083">#11083</a>'
   NotebookCell:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
   NotebookCellData:
@@ -110,12 +125,43 @@ root:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
   NotebookSerializer:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/8395">#8395</a>'
+  OnEnterRule:
+    previousLineText:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/11131">#11131</a>'
   ProviderResult:
     _note: '<a href="https://github.com/eclipse-theia/vscode-theia-comparator/issues/21">Comparator: #21</a>'
     T:
       _note: '<a href="https://github.com/eclipse-theia/vscode-theia-comparator/issues/21">Comparator: #21</a>'
     Thenable:
       _note: '<a href="https://github.com/eclipse-theia/vscode-theia-comparator/issues/21">Comparator: #21</a>'
+  RunOptions:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/11132">#11132</a>'
+  SignatureInformation:
+    activeParameter:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/11134">#11134</a>'
+  SourceControlInputBox:
+    visible:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/11140">#11140</a>'
+  Task:
+    runOptions:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/11132">#11132</a>'
+  TaskPresentationOptions:
+    clear:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/11133">#11133</a>'
+  Terminal:
+    creationOptions:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/11138">#11138</a>'
+    exitStatus:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/11139">#11139</a>'
+  TerminalExitStatus:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/11139">#11139</a>'
+  TerminalOptions:
+    strictEnv:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/11143">#11143</a>'
+    hideFromUser:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/11144">#11144</a>'
+    message:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/11145">#11145</a>'
   TestController: 
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
   TestItem: 
@@ -134,6 +180,21 @@ root:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
   TestTag: 
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
+  TextEditor:
+    show:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/11146">#11146</a>'
+    hide:
+      _note: '<a href="https://github.com/eclipse-theia/theia/issues/11146">#11146</a>'
+  ThemeIcon:
+    constructor:
+      _note:  '<a href="https://github.com/eclipse-theia/theia/issues/11128">#11128</a>'
+    color:
+      _note:  '<a href="https://github.com/eclipse-theia/theia/issues/11128">#11128</a>'
+  TreeDataProvider:
+    resolveTreeItem:
+      _note:  '<a href="https://github.com/eclipse-theia/theia/issues/11147">#11147</a>'
+  TreeItemLabel:
+    _note:  '<a href="https://github.com/eclipse-theia/theia/issues/11148">#11148</a>'
   TreeViewOptions:
     canSelectMany:
       _note: '<a href="https://github.com/eclipse-theia/theia/issues/10102">#10102</a>'
@@ -144,7 +205,7 @@ root:
   WebviewViewProvider:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/8740">#8740</a>'
   WebviewViewResolveContext:
-    _note: '<a href="https://github.com/eclipse-theia/theia/issues/8740">#8740</a>'
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/11149">#11149</a>'
 
 debug:
   _note: '<a href="https://github.com/eclipse-theia/theia/issues/10661">#10661</a>'
@@ -177,9 +238,13 @@ window:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/8740">#8740</a>'
   createTerminal:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/6589">#6589</a>'
+  withScmProgress:
+    _note: '<a href="https://code.visualstudio.com/api/references/vscode-api#window">Deprecated</a>'
 
 workspace:
   _note: '<a href="https://github.com/eclipse-theia/theia/issues/10472">#10472</a>'
+  getConfiguration:
+    _note: '<a href="https://github.com/eclipse-theia/theia/issues/10004">#10004</a>'
   isTrusted:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10472">#10472</a>'
   onDidGrantWorkspaceTrust:
