@@ -42,6 +42,24 @@ export class Comparator {
             if (pluginContext) {
                 pluginContext.name = 'ExtensionContext';
             }
+            const pluginType = rootNS.find(entry => entry.name === 'PluginType');
+            if (pluginType) {
+                pluginType.name = 'ExtensionKind';
+
+                if (!pluginType.members) {
+                    pluginType.members = [];
+                }
+
+                const frontend = pluginType.unions.find(member => member.name === 'frontend');
+                if (frontend) {
+                    pluginType.members.push({ name: 'UI', value: '1' });
+                }
+
+                const backend = pluginType.unions.find(member => member.name === 'backend');
+                if (backend) {
+                    pluginType.members.push({ name: 'Workspace', value: '2' });
+                }
+            }
             const plugin = rootNS.find(entry => entry.name === 'Plugin');
             if (plugin) {
                 plugin.name = 'Extension';
@@ -49,6 +67,16 @@ export class Comparator {
                 const pluginPath = plugin.members.find(member => member.name === 'pluginPath');
                 if (pluginPath) {
                     pluginPath.name = 'extensionPath';
+                }
+
+                const pluginURI = plugin.members.find(member => member.name === 'pluginUri');
+                if (pluginURI) {
+                    pluginURI.name = 'extensionUri';
+                }
+
+                const pluginPluginType = plugin.members.find(member => member.name === 'pluginType');
+                if (pluginPluginType) {
+                    pluginPluginType.name = 'extensionKind';
                 }
 
             }
