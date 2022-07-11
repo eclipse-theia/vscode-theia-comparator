@@ -93,13 +93,6 @@ export class Comparator {
 
     // now compare commands
 
-    updateThenable(value: string): string {
-        if (value) {
-            return value.replace(/Thenable/g, 'PromiseLike');
-        }
-        return '';
-    }
-
     compare(): void {
 
         // init map with all entries of latest vsCode
@@ -328,7 +321,7 @@ export class Comparator {
                             if (docEntryLatestVsCodeCommand.unions && docEntryLatestVsCodeCommand.unions.length > 0) {
                                 // ok so here search in all unions if it's defined in each vscode version
                                 docEntryLatestVsCodeCommand.unions.forEach(union => {
-                                    const searchedUnion = inCurrent.unions?.find(currentUnion => currentUnion.name === this.updateThenable(union.name));
+                                    const searchedUnion = inCurrent.unions?.find(currentUnion => currentUnion.name === union.name);
 
                                     // it's there, add it
                                     if (searchedUnion) {

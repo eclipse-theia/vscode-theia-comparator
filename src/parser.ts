@@ -96,8 +96,7 @@ export class Parser {
             const parameterType = this.checker.getTypeAtLocation(parameter.valueDeclaration);
             memberDoc.type = this.checker.typeToString(parameterType);
 
-            // Thenable --> PromiseLike for hash
-            toHash += memberDoc.type.replace('Thenable', 'PromiseLike');
+            toHash += memberDoc.type;
 
             details.parameters.push(memberDoc);
         });
