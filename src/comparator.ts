@@ -130,9 +130,7 @@ export class Comparator {
 
                 });
             }
-
-        }
-        );
+        });
 
         // ok, now compare with each version of vscode (except latest one which is first index
         // it should be only yes or N/A

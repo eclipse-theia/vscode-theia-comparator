@@ -57,6 +57,40 @@ The tool grabs files remotely, and checks the latest versions using the [GraphQL
     ✍️  Filtered HTML status written at /home/user/Git/vscode-theia-comparator/out/filtered-status.html
     ```
 
+## Additional CLI options
+
+### Using a local repository
+
+In order to compare the state of local repositories, you may use the `theia-path` and `vscode-path` options. If these options are provided and no additional versions are provided on the command line, only the local states will be compared.
+
+```shell
+yarn run generate theia-path=/path/to/theia vscode-path=/path/to/vscode
+```
+
+In this case, only your local Theia and VSCode repositories will be compared.
+
+```shell
+yarn run generate theia-path=/path/to/theia
+```
+
+With these arguments, your local Theia will be compared with the default set of VSCode versions fetched from GitHub.
+
+```shell
+yarn run generate theia-path=/path/to/theia theia-versions=v1.27.0
+```
+
+With this input, the local copy of Theia as well as version 1.27.0 fetched from GitHub will be compared with the default set of VSCode versions fetched from GitHub.
+
+### Defining versions for comparison
+
+In order to control the versions used for comparison, you can pass a list of comma-separated commit references (tags, branch names, SHA's) as `theia-versions` or `vscode-versions`. At present, the references must be found in the main repository (i.e. not a fork) for each comparandum.
+
+```shell
+yarn run generate theia-versions=v1.27.0,v1.26.0,master vscode-versions=main,1.0.0
+```
+
+This input will compare the `master` branch and (tagged) versions 1.27.0 and 1.26.0 of Theia with the `main` branch and (tagged) version 1.0.0 of VSCode.
+
 ## Provide additional information
 
 The generator can add notes for any namespace, element or sub element.

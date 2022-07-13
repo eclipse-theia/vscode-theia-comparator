@@ -28,6 +28,13 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.44.tgz#447e3eecad9d19bd779f4a575f361d34898c0722"
   integrity sha512-gwP6+QDgL5TDBIWh1lbYh3EFPU11pa+8xcamcsA3ROkp3A9X+/3Y5cRgq93VPEEE+CGfxlQnqkg1kkWGBgh3fw==
 
+"@types/untildify@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/untildify/-/untildify-4.0.0.tgz#48f51e62b38baf7244fa527eacd3d9f605540e14"
+  integrity sha512-AoSIFVSN4k0l6yD2QKw2TWQkhH3sKsDpke2ozD69WfjPiDmoNJjah+oPUfiJTdCZZqC7pdEq8c5p8vdm5hvn9Q==
+  dependencies:
+    untildify "*"
+
 ansi-styles@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-3.2.1.tgz#41fbb20243e50b12be0f04b8dedbf07520ce841d"
@@ -440,6 +447,11 @@ whatwg-url@^5.0.0:
   dependencies:
     tr46 "~0.0.3"
     webidl-conversions "^3.0.0"
+
+untildify@*, untildify@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/untildify/-/untildify-4.0.0.tgz#2bc947b953652487e4600949fb091e3ae8cd919b"
+  integrity sha512-KK8xQ1mkzZeg9inewmFVDNkg3l5LUhoq9kN6iWYB/CC9YMG8HA+c1Q8HwDe6dEX7kErrEVNVBO3fWsVq5iDgtw==
 
 wrappy@1:
   version "1.0.2"
