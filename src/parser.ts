@@ -19,14 +19,14 @@ export class Parser {
     public static readonly ROOT_NAMESPACE = 'root';
 
     serializeConstructorSymbol = (symbol: ts.Symbol): DocEntry =>
-        ({
-            name: symbol.getName(),
-            documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
-            type: this.checker.typeToString(
-                this.checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration!)
-            ),
-            handleType: 'ConstructorDeclaration',
-        })
+    ({
+        name: symbol.getName(),
+        documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
+        type: this.checker.typeToString(
+            this.checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration!)
+        ),
+        handleType: 'ConstructorDeclaration',
+    })
 
     private serializeEnum(symbol: ts.Symbol) {
         const enumType = this.checker.getTypeAtLocation(symbol.declarations[0]) as ts.EnumType;
@@ -176,11 +176,11 @@ export class Parser {
 
     /** Serialize a signature (call or construct) */
     serializeConstructorSignature = (signature: ts.Signature) =>
-        ({
-            parameters: signature.parameters.map(this.serializeConstructorSymbol),
-            /*returnType: checker.typeToString(signature.getReturnType())*/
-            /*documentation: ts.displayPartsToString(signature.getDocumentationComment(this.checker))*/
-        })
+    ({
+        parameters: signature.parameters.map(this.serializeConstructorSymbol),
+        /*returnType: checker.typeToString(signature.getReturnType())*/
+        /*documentation: ts.displayPartsToString(signature.getDocumentationComment(this.checker))*/
+    })
 
     private getModifiers(member: ts.Symbol) {
         const modifiers: string[] = [];
@@ -196,13 +196,13 @@ export class Parser {
 
     private getParameterInfo(callSignature: ts.Signature) {
         return callSignature.parameters.map(param =>
-            ({
-                /*description:
-                  ts.displayPartsToString(
-                    param.getDocumentationComment(checker)
-                  ) || null,*/
-                name: param.getName()
-            }));
+        ({
+            /*description:
+              ts.displayPartsToString(
+                param.getDocumentationComment(checker)
+              ) || null,*/
+            name: param.getName()
+        }));
     }
 
     private syntaxKindToName(kind: ts.SyntaxKind) {
