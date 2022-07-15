@@ -19,13 +19,9 @@ import { parseInfos } from './infos';
 
 async function init() {
 
-    // grab remote VS Code versions dumped locally
-    const grabTheiaVersions = new GrabTheiaVersions();
-    const theiaEntries = await grabTheiaVersions.grab();
-
-    // grab remote VS Code versions dumped locally
-    const grabVSCodeVersions = new GrabVSCodeVersions();
-    const vsCodeEntries = await grabVSCodeVersions.grab();
+    // Find or download the declaration files for Theia and VSCode
+    const theiaEntries = await new GrabTheiaVersions().grab();
+    const vsCodeEntries = await new GrabVSCodeVersions().grab();
 
     // start comparator
     const comparator = new Comparator(vsCodeEntries, theiaEntries);
@@ -62,7 +58,7 @@ if (!process.env.GITHUB_TOKEN) {
 } else {
 
     init().catch(err => {
-        console.error(`🚒 ${err}`);
+        console.error(`🚒 ${err.stack}`);
         process.exit(1);
     });
 

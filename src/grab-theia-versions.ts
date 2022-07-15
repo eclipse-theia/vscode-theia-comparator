@@ -9,19 +9,24 @@
 **********************************************************************/
 
 import * as path from 'path';
-import { GraphQLClient } from 'graphql-request';
 import * as fs from 'fs-extra';
+import untildify = require('untildify');
+import { GraphQLClient } from 'graphql-request';
 import { ScannerEntry } from './scanner-entry';
 import { Content } from './content';
+import { AbstractVersionGrabber } from './abstract-version-grabber';
 
-export class GrabTheiaVersions {
+export class GrabTheiaVersions extends AbstractVersionGrabber {
 
     static readonly THEIA_URL_PATTERN = 'https://raw.githubusercontent.com/theia-ide/theia/${VERSION}/packages/plugin/src/theia.d.ts';
 
     private readonly content = new Content();
+    protected readonly argumentPrefix = 'theia';
+    protected readonly displayName = 'Theia';
+    protected readonly primaryBranchName = 'master';
 
-    public async grabVersions(): Promise<string[]> {
-        console.log('🔍 Searching on github the Theia versions...');
+    protected async grabVersionsFromRemote(): Promise<string[]> {
+        console.log('🔍 Searching on GitHub for tagged Theia versions...');
         const query = `{
     repository(owner: "theia-ide", name: "theia") {
       refs(refPrefix: "refs/tags/", last: 15, orderBy: {field: TAG_COMMIT_DATE, direction: ASC}) {
@@ -69,21 +74,22 @@ export class GrabTheiaVersions {
         return versions;
     }
 
-    public async grab(): Promise<ScannerEntry[]> {
-        const versions = await this.grabVersions();
-        console.log(`🗂  The Theia versions to compare will be ${versions.join(', ')}`);
-        process.stdout.write('🗃  Grabbing content...');
+    protected async getPathFromCLI(): Promise<[ScannerEntry] | undefined> {
+        const relativePathFromCLI = untildify(process.argv.slice(2).find(arg => arg.startsWith('theia-path='))?.substring('theia-path='.length) ?? '');
+        if (relativePathFromCLI) {
+            const theiaFromCLI = relativePathFromCLI.endsWith('theia.d.ts') ? path.resolve(relativePathFromCLI) : path.resolve(relativePathFromCLI, 'packages', 'plugin', 'src', 'theia.d.ts');
+            if (await fs.pathExists(theiaFromCLI)) {
+                return [{ paths: [path.resolve(__dirname, '../conf', 'vscode-theia.d.ts'), path.resolve(theiaFromCLI)], version: 'local' }];
+            }
+        }
+    }
 
-        const versionsPath = await Promise.all(versions.map(async version => {
-            const filePath = path.resolve(__dirname, `theia-${version}.d.ts`);
-            const url = GrabTheiaVersions.THEIA_URL_PATTERN.replace('${VERSION}', version);
-            const content = await this.content.get(url);
-            await fs.writeFile(filePath, content);
-            const paths = [path.resolve(__dirname, '../conf', 'vscode-theia.d.ts'), filePath];
-            const entry: ScannerEntry = { paths, version };
-            return entry;
-        }));
-        process.stdout.write('✔️ \n');
-        return versionsPath;
+    protected async versionToEntry(version: string): Promise<ScannerEntry> {
+        const filePath = path.resolve(__dirname, `theia-${version}.d.ts`);
+        const url = GrabTheiaVersions.THEIA_URL_PATTERN.replace('${VERSION}', version);
+        const content = await this.content.get(url);
+        await fs.writeFile(filePath, content);
+        const paths = [path.resolve(__dirname, '../conf', 'vscode-theia.d.ts'), filePath];
+        return { paths, version };
     }
 }
