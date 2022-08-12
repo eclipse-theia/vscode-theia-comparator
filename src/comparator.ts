@@ -29,6 +29,9 @@ export class Comparator {
 
     init(): void {
 
+        const fullParser = new Parser();
+        fullParser.generateDocumentation(...this.theiaEntries[0].paths, this.vsCodeEntries[0].path);
+
         this.vsCodeEntries.forEach(vscodeEntry => {
             vscodeEntry.parser = new Parser();
             vscodeEntry.parser.generateDocumentation(vscodeEntry.path);

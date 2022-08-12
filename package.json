@@ -34,12 +34,15 @@
   "scripts": {
     "prepare": "yarn run clean && yarn run build",
     "clean": "rimraf lib",
+    "current": "yarn run generate theia-versions=master vscode-versions=main",
     "format-code": "tsfmt -r",
     "compile": "tsc",
     "watch": "tsc -watch",
     "tslint-fix": "tslint --fix --project .",
     "tslint": "tslint --project .",
     "build": "yarn run format-code && yarn run tslint-fix && yarn run tslint && yarn run compile",
+    "build-dirty": "yarn run compile",
+    "build-clean": "yarn run clean && yarn run build-dirty",
     "ci": "yarn run tslint && yarn run compile",
     "generate": "node lib/index.js"
   }
