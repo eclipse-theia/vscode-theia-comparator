@@ -23,10 +23,7 @@ async function init() {
     const theiaEntries = await new GrabTheiaVersions().grab();
     const vsCodeEntries = await new GrabVSCodeVersions().grab();
 
-    // start comparator
-    const comparator = new Comparator(vsCodeEntries, theiaEntries);
-    comparator.init();
-    comparator.compare();
+    const comparisons = Comparator.compare(vsCodeEntries, theiaEntries);
 
     // Parse additional information
     console.log('⚙️  Parsing additional information from infos.yml...');
@@ -35,21 +32,20 @@ async function init() {
 
     // Generate HTML output
     console.log('⚙️  Generating HTML report...');
-    const htmlGenerator = new HTMLGenerator(vsCodeEntries, theiaEntries, comparator.result(), infos);
-    const content = htmlGenerator.generate();
+    const content = HTMLGenerator.generate(comparisons, infos);
     await fs.ensureDir(path.resolve(__dirname, '../out'));
     const outputFile = path.resolve(__dirname, '../out', 'status.html');
     fs.writeFileSync(outputFile, content);
     console.log(`✍️  HTML status written at ${outputFile}`);
 
-    // Generate filtered HTML report only containing entries unsupported in at least one theia version
-    console.log('⚙️  Generating filtered HTML report...');
-    comparator.removeSupported();
-    const filteredHtmlGenerator = new HTMLGenerator(vsCodeEntries, theiaEntries, comparator.result(), infos);
-    const filteredContent = filteredHtmlGenerator.generate();
-    const filteredOutputFile = path.resolve(__dirname, '../out', 'filtered-status.html');
-    fs.writeFileSync(filteredOutputFile, filteredContent);
-    console.log(`✍️  Filtered HTML status written at ${filteredOutputFile}`);
+    // // Generate filtered HTML report only containing entries unsupported in at least one theia version
+    // console.log('⚙️  Generating filtered HTML report...');
+    // comparator.removeSupported();
+    // const filteredHtmlGenerator = new HTMLGenerator(vsCodeEntries, theiaEntries, comparator.result(), infos);
+    // const filteredContent = filteredHtmlGenerator.generate();
+    // const filteredOutputFile = path.resolve(__dirname, '../out', 'filtered-status.html');
+    // fs.writeFileSync(filteredOutputFile, filteredContent);
+    // console.log(`✍️  Filtered HTML status written at ${filteredOutputFile}`);
 }
 
 if (!process.env.GITHUB_TOKEN) {

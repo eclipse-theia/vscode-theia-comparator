@@ -79,7 +79,7 @@ export class GrabTheiaVersions extends AbstractVersionGrabber {
         if (relativePathFromCLI) {
             const theiaFromCLI = relativePathFromCLI.endsWith('theia.d.ts') ? path.resolve(relativePathFromCLI) : path.resolve(relativePathFromCLI, 'packages', 'plugin', 'src', 'theia.d.ts');
             if (await fs.pathExists(theiaFromCLI)) {
-                return [{ paths: [path.resolve(__dirname, '../conf', 'vscode-theia.d.ts'), path.resolve(theiaFromCLI)], version: 'local' }];
+                return [{ paths: [path.resolve(__dirname, '../conf', 'vscode-theia.d.ts')], version: 'local', path: path.resolve(theiaFromCLI) }];
             }
         }
     }
@@ -89,7 +89,7 @@ export class GrabTheiaVersions extends AbstractVersionGrabber {
         const url = GrabTheiaVersions.THEIA_URL_PATTERN.replace('${VERSION}', version);
         const content = await this.content.get(url);
         await fs.writeFile(filePath, content);
-        const paths = [path.resolve(__dirname, '../conf', 'vscode-theia.d.ts'), filePath];
-        return { paths, version };
+        const paths = [path.resolve(__dirname, '../conf', 'vscode-theia.d.ts')];
+        return { paths, version, path: filePath };
     }
 }

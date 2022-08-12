@@ -33,6 +33,7 @@
   },
   "scripts": {
     "prepare": "yarn run clean && yarn run build",
+    "postinstall": "sed -i.bak '/var checker = {/a isTypeIdenticalTo,' ./node_modules/typescript/lib/typescript.js",
     "clean": "rimraf lib",
     "current": "yarn run generate theia-versions=master vscode-versions=main",
     "format-code": "tsfmt -r",
