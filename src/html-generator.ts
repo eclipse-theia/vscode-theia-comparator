@@ -141,7 +141,8 @@ a { color: #0056b3; }
                         const rowSuccess = traverse(value, rows, ...newPathSegments);
                         rowSuccess.forEach((aggregateSuccess, index) => {
                             if (index < numTheiaVersions) {
-                                complexRow.appendChild(theiaColumn(aggregateSuccess === undefined ? true : aggregateSuccess)); // Empty interfaces will leave the value undefined.
+                                // Empty interfaces will leave the value undefined.
+                                complexRow.appendChild(theiaColumn(aggregateSuccess === undefined ? true : aggregateSuccess));
                             }
                             if (index === numTheiaVersions - 1) {
                                 complexRow.appendChild(EXPECTED); // Reference version
@@ -164,6 +165,7 @@ a { color: #0056b3; }
                         updateSuccessValue(success, index + numTheiaVersions, valueAtLocation === null ? null : true);
                         entry.appendChild(VSCodeColumn(valueAtLocation));
                     });
+
                     rows.push(entry);
                 }
             });
@@ -172,7 +174,13 @@ a { color: #0056b3; }
 
         const updateSuccessValue = (successes: Array<boolean | null>, index: number, newValue: boolean | null) => {
             if (successes[index] === false) { return; }
-            if (successes[index] === true) { successes[index] = newValue || false; } else if (successes[index] === null && newValue !== null) { successes[index] = false; } else if (successes[index] === undefined) { successes[index] = newValue; }
+            if (successes[index] === true) {
+                successes[index] = newValue || false;
+            } else if (successes[index] === null && newValue !== null) {
+                successes[index] = false;
+            } else if (successes[index] === undefined) {
+                successes[index] = newValue;
+            }
         };
 
         traverse(Object.values(comparisons.theia)[0].full, namespaces[0]);
