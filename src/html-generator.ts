@@ -41,6 +41,14 @@ class Tag implements Renderable {
     render(): string {
         return `<${this.name} ${Object.entries(this.properties).map(([key, value]) => `${key}="${value}"`).join(' ')}>${this.children.map(child => child.render()).join('')}</${this.name}>`;
     }
+
+    addClass(className: string): void {
+        if (this.properties.class) {
+            this.properties.class += ' ' + className.trim()
+        } else {
+            this.properties.class = className.trim();
+        }
+    }
 }
 
 class TR extends Tag {
@@ -109,23 +117,35 @@ a { color: #0056b3; }
         const table = new Tag('table');
         const thead = new Tag('thead');
         const tbodyFull = new Tag('tbody', { id: 'full-report' });
-        const tbodyFiltered = new Tag('tbody', { id: 'filtered-report', style: 'display: none;' });
-        table.appendChildren(thead, tbodyFull, tbodyFiltered);
+        table.appendChildren(thead, tbodyFull);
         html.appendChildren(head, body);
         body.appendChild(table);
         body.appendChild(new TextNode(`
     <script>
         const form = document.getElementById('report-filter-selector-form');
-        const fullReport = document.getElementById('full-report');
-        const filteredReport = document.getElementById('filtered-report');
         const radioButtons = document.getElementsByClassName('report-filter-selector');
+        const styleSheet = document.head.getElementsByTagName('style')[0].sheet;
+        const selector = '.to-filter'
+        const rule = \`\${selector} { display: none; }\`;
+        const addRule = () => {
+            const ruleIndex = Array.from(styleSheet.cssRules).findIndex(rule => rule.selectorText === selector);
+            if (ruleIndex === -1) {
+                styleSheet.insertRule(rule, 0);
+            } else {
+                styleSheet.cssRules[ruleIndex].style.display = 'none';
+            }
+        }
+        const removeRule = () => {
+            const ruleIndex = Array.from(styleSheet.cssRules).findIndex(rule => rule.selectorText === selector);
+            if (ruleIndex !== -1) {
+                styleSheet.deleteRule(ruleIndex);
+            }
+        }
         Array.from(radioButtons).forEach(button => button.addEventListener('change', () => {
             if (form['report-filter-selector'].value === 'filtered') {
-                fullReport.style.display = 'none';
-                filteredReport.style.display = '';
+                addRule();
             } else {
-                filteredReport.style.display = 'none';
-                fullReport.style.display = '';
+                removeRule();
             }
         }));
     </script>
@@ -145,7 +165,7 @@ a { color: #0056b3; }
             ...Object.keys(comparisons.vscode).map(version => new TH(topRowProps, new TextNode(`VSCode ${version}`))),
         );
         thead.appendChild(firstRow);
-        const namespaces = new Array<[Renderable[], Renderable[]]>([[namespaceRow('root')], [namespaceRow('root')]]);
+        const namespaces = new Array<Renderable[]>([namespaceRow('root')]);
         const theiaColumn = (value: boolean | undefined | null | Comparison): Renderable => {
             switch (value) {
                 case undefined:
@@ -162,25 +182,20 @@ a { color: #0056b3; }
                 default: return EXPECTED;
             }
         };
-        const traverse = (current: Comparison, rows: Renderable[], filteredRows: Renderable[], ...pathSegments: string[]): Array<boolean | null> => {
+        const traverse = (current: Comparison, rows: Renderable[], ...pathSegments: string[]): Array<boolean | null> => {
             const success: Array<boolean | null | undefined> = new Array(totalColumns - 2).fill(undefined);
             Object.keys(current).sort().forEach(key => {
                 const value = current[key];
                 const newPathSegments = [...pathSegments, key];
                 if (value && typeof value === 'object') {
                     if (key.charAt(0).toLowerCase() === key.charAt(0)) { // Probably a namespace
-                        const namespaceLabel = namespaceRow(key);
-                        const namespaceRenderables: [Renderable[], Renderable[]] = [[namespaceLabel], [namespaceLabel]];
+                        const namespaceRenderables = [namespaceRow(key)];
                         namespaces.push(namespaceRenderables)
-                        traverse(value, namespaceRenderables[0], namespaceRenderables[1], ...newPathSegments);
+                        traverse(value, namespaceRenderables, ...newPathSegments);
                     } else {
                         const complexRow = new Row(key, true);
                         rows.push(complexRow);
-                        const numFilteredRowsBeforeTraversal = filteredRows.push(complexRow);
-                        const rowSuccess = traverse(value, rows, filteredRows, ...newPathSegments);
-                        if (filteredRows.length === numFilteredRowsBeforeTraversal) { // No child rows were added - we should remove the complex row.
-                            filteredRows.pop();
-                        }
+                        const rowSuccess = traverse(value, rows, ...newPathSegments);
                         rowSuccess.forEach((aggregateSuccess, index) => {
                             if (index < numTheiaVersions) {
                                 // Empty interfaces will leave the value undefined.
@@ -193,6 +208,9 @@ a { color: #0056b3; }
                                 complexRow.appendChild(VSCodeColumn(aggregateSuccess));
                             }
                         });
+                        if (!rowContainsProblems(rowSuccess)) {
+                            complexRow.addClass('to-filter');
+                        }
                     }
                 } else {
                     let appearsInFiltered = false;
@@ -211,8 +229,8 @@ a { color: #0056b3; }
                     });
 
                     rows.push(entry);
-                    if (appearsInFiltered) {
-                        filteredRows.push(entry);
+                    if (!appearsInFiltered) {
+                        entry.addClass('to-filter');
                     }
                 }
             });
@@ -230,11 +248,15 @@ a { color: #0056b3; }
             }
         };
 
-        traverse(Object.values(comparisons.theia)[0].full, ...namespaces[0]);
-        namespaces.forEach(([namespaceContents, filteredContents]) => {
-            tbodyFull.appendChildren(...namespaceContents);
-            tbodyFiltered.appendChildren(...filteredContents);
-        });
+        const rowContainsProblems = (successes: Array<boolean | null>): boolean => {
+            for (let i = 0; i < numTheiaVersions; i++) {
+                if (successes[i] === null || successes[i] === false) return true;
+            }
+            return false;
+        }
+
+        traverse(Object.values(comparisons.theia)[0].full, namespaces[0]);
+        namespaces.forEach(namespaceContents => tbodyFull.appendChildren(...namespaceContents));
         return html.render();
     }
 
