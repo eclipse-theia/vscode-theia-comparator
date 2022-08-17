@@ -24,7 +24,7 @@ interface TypeContainer {
 }
 
 interface EnhancedChecker extends ts.TypeChecker {
-    isTypeIdenticalTo(source: ts.Type, target: ts.Type): boolean;
+    isTypeAssignableTo(source: ts.Type, target: ts.Type);
 }
 
 export class Parser {
@@ -121,7 +121,7 @@ export class Parser {
             Object.entries(vscodeSide).forEach(([key, target]) => {
                 const correspondent: TypeContainer | ts.Type | undefined = theiaSide[key];
                 if (isType(target) && isType(correspondent)) {
-                    const isCompatible = result[key] = checker.isTypeIdenticalTo(correspondent, target);
+                    const isCompatible = result[key] = checker.isTypeAssignableTo(correspondent, target);
                     if (!isCompatible) {
                         failures[key] = false;
                     }
