@@ -1,5 +1,5 @@
 /*********************************************************************
-* Copyright (c) 2019 Red Hat, Inc.
+* Copyright (c) 2022 Ericsson.
 *
 * This program and the accompanying materials are made
 * available under the terms of the Eclipse Public License 2.0
@@ -8,7 +8,6 @@
 * SPDX-License-Identifier: EPL-2.0
 **********************************************************************/
 
-export interface Included {
-    version: string;
-    available: 'yes' | 'defined' | 'no' | 'N/A';
+export interface RecursiveRecord<T> {
+    [key: string]: T | RecursiveRecord<T>;
 }

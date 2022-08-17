@@ -9,10 +9,9 @@
 **********************************************************************/
 
 import * as YAML from 'yaml';
+import { RecursiveRecord } from './recursive-record';
 
-export interface Infos {
-    [element: string]: Record<string, Info>;
-}
+export interface Infos extends RecursiveRecord<string> { }
 interface Note {
     // Start with underscore to not conflict with sub element names
     _note?: string;
@@ -32,24 +31,4 @@ export function parseInfos(yaml: string): Infos {
         console.error('⚠  Failed to parse additional notes due to an error', err);
         return {};
     }
-}
-
-/**
- * Resolve additional information for a namespace, an element (e.g. class, interface) or a sub element thereof (e.g. member, constructor).
- *
- * @param infos All additional information
- * @param namespace Namespace key of the element
- * @param element Name of the element
- * @param subElement Name of the sub element
- * @returns the resolved info or undefined if there is none
- */
-export function resolveInfo(infos: Infos, namespace: string, element?: string, subElement?: string): Info | undefined {
-    let resolved = infos[namespace];
-    if (resolved && element) {
-        resolved = resolved[element];
-        if (resolved && subElement) {
-            resolved = resolved[subElement];
-        }
-    }
-    return resolved;
 }

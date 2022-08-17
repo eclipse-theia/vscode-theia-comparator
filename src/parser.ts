@@ -10,10 +10,9 @@
 
 /* tslint:disable */
 import * as ts from 'typescript';
+import { RecursiveRecord } from './recursive-record';
 
-export interface Comparison {
-    [key: string]: boolean | null | Comparison;
-}
+export interface Comparison extends RecursiveRecord<boolean | null> { }
 
 export interface FullAndFilteredComparisons {
     full: Comparison;

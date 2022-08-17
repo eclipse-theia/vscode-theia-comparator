@@ -8,10 +8,10 @@
 * SPDX-License-Identifier: EPL-2.0
 **********************************************************************/
 
-import { ScannerEntry } from './scanner-entry';
-import { Infos, resolveInfo } from './infos';
+import { Infos } from './infos';
 import { VersionComparisons } from './comparator';
 import { Comparison } from './parser';
+import { RecursiveRecord } from './recursive-record';
 
 interface Renderable {
     render(): string;
@@ -72,15 +72,14 @@ class TH extends Tag {
 class Row extends TR {
     constructor(name: string, complex: boolean, ...children: Renderable[]) {
         const text = new TextNode(name);
-        const props = complex ? { class: 'command' } : { style: 'padding-left: 16px;' };
-        const firstColumn = new TD(props, complex ? new Tag('b', {}, text) : text);
+        const firstColumn = new TD({ class: complex ? `row-label complex` : `row-label simple` }, complex ? new Tag('b', {}, text) : text);
         super({ class: 'bg-info' }, firstColumn, ...children);
     }
 }
 
 class Status extends TD {
     constructor(statusColor: string, statusEmoji: string) {
-        super({ class: `bg-${statusColor}` }, new TextNode(statusEmoji));
+        super({ class: `bg-${statusColor} status` }, new TextNode(statusEmoji));
     }
     override appendChild(): void { }
     override appendChildren(): void { }
@@ -89,7 +88,7 @@ class Status extends TD {
 const CORRECT = new Status('success', '✔️');
 const ABSENT = new Status('danger', '✖️');
 const INCORRECT = new Status('warning', '⚠️');
-const NOT_APPLICABLE = new TD({ class: 'bg-light' }, new TextNode('N/A'));
+const NOT_APPLICABLE = new Status('light', 'N/A');
 const EXPECTED = new Status('info', '✔️');
 
 export class HTMLGenerator {
@@ -100,18 +99,22 @@ export class HTMLGenerator {
         // row = Each command
         // column = Each Theia version
         const numTheiaVersions = Object.keys(comparisons.theia).length;
-        const numVscodeVersions = Object.keys(comparisons.vscode).length + 1; // Plus the reference versions
-        // The Theia versions + VSCode versions + notes
-        const totalColumns = numTheiaVersions + numVscodeVersions + 1;
+        const numVscodeVersions = Object.keys(comparisons.vscode).length;
+        // The Theia versions + VSCode versions + label + VSCode reference version + notes
+        const totalColumns = numTheiaVersions + numVscodeVersions + 3;
         const html = new Tag('html');
         const head = new Tag('head', {}, new TextNode(`
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-<base target="_blank">
-<style>
-a { color: #0056b3; }
-</style>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <base target="_blank">
+    <style>
+        a { color: #0056b3; }
+        td { border: 1px solid #666; }
+        td.status { text-align: center; }
+        td.row-label { padding-right: 6px; }
+        td.row-label.simple { padding-left: 8px; }
+    </style>
         `));
         const body = new Tag('body');
         const table = new Tag('table');
@@ -150,12 +153,12 @@ a { color: #0056b3; }
         }));
     </script>
         `))
-        const topRowProps = { class: 'ide' };
+        const topRowProps = { class: 'ide', style: 'padding: 0 3px;' };
         const namespaceRow = (name: string) => new TR({ class: 'bg-warning' },
             new TD({ colspan: totalColumns.toString() }, new TextNode(`namespace/${name}`)),
         );
         const firstRow = new TR({ class: 'bg-primary', style: 'position: sticky; top: 0; z-index: 1000' },
-            new TH({ class: 'command' },
+            new TH({},
                 new Tag('form', { id: 'report-filter-selector-form', style: 'display: flex; justify-content: space-around; align-items: center; flex-flow: row nowrap; height: 100%; width: 100%;' },
                     new Tag('label', { for: 'full-report-button' }, new TextNode('Full'), new Tag('input', { type: 'radio', class: 'report-filter-selector', name: 'report-filter-selector', id: 'full-report-button', value: "full", checked: 'true', style: 'margin-left: 8px;' })),
                     new Tag('label', { for: 'filtered-report-button' }, new TextNode('Filtered'), new Tag('input', { type: 'radio', class: 'report-filter-selector', name: 'report-filter-selector', id: 'filtered-report-button', value: "filtered", style: 'margin-left: 8px;' })),
@@ -163,9 +166,15 @@ a { color: #0056b3; }
             ...Object.keys(comparisons.theia).map(version => new TH(topRowProps, new TextNode(`Theia ${version}`))),
             new TH(topRowProps, new TextNode(`VSCode ${comparisons.vscodeReferenceVersion}`)),
             ...Object.keys(comparisons.vscode).map(version => new TH(topRowProps, new TextNode(`VSCode ${version}`))),
+            new TH({}, new TextNode('Note'))
         );
         thead.appendChild(firstRow);
         const namespaces = new Array<Renderable[]>([namespaceRow('root')]);
+        const metadataColumn = (...path: string[]) => {
+            const value = retrieveValue(notes, [...path, '_note']) ?? retrieveValue(notes, ['root', ...path, '_note']);
+            const text = typeof value === 'string' ? value : '';
+            return new TD({ class: 'status' }, new TextNode(text));
+        };
         const theiaColumn = (value: boolean | undefined | null | Comparison): Renderable => {
             switch (value) {
                 case undefined:
@@ -183,7 +192,7 @@ a { color: #0056b3; }
             }
         };
         const traverse = (current: Comparison, rows: Renderable[], ...pathSegments: string[]): Array<boolean | null> => {
-            const success: Array<boolean | null | undefined> = new Array(totalColumns - 2).fill(undefined);
+            const success: Array<boolean | null | undefined> = new Array(numTheiaVersions + numVscodeVersions).fill(undefined);
             Object.keys(current).sort().forEach(key => {
                 const value = current[key];
                 const newPathSegments = [...pathSegments, key];
@@ -208,6 +217,7 @@ a { color: #0056b3; }
                                 complexRow.appendChild(VSCodeColumn(aggregateSuccess));
                             }
                         });
+                        complexRow.appendChild(metadataColumn(...newPathSegments))
                         if (!rowContainsProblems(rowSuccess)) {
                             complexRow.addClass('to-filter');
                         }
@@ -227,6 +237,7 @@ a { color: #0056b3; }
                         updateSuccessValue(success, index + numTheiaVersions, valueAtLocation === null ? null : true);
                         entry.appendChild(VSCodeColumn(valueAtLocation));
                     });
+                    entry.appendChild(metadataColumn(...newPathSegments))
 
                     rows.push(entry);
                     if (!appearsInFiltered) {
@@ -262,8 +273,8 @@ a { color: #0056b3; }
 
 }
 
-function retrieveValue(target: Comparison, path: string[]): Comparison | boolean | null | undefined {
-    let current: Comparison | boolean | null | undefined = target;
+function retrieveValue<T>(target: RecursiveRecord<T>, path: string[]): RecursiveRecord<T> | T | undefined {
+    let current: RecursiveRecord<T> | T | undefined = target;
     for (const key of path) {
         if (!current || typeof current !== 'object') {
             return undefined;
