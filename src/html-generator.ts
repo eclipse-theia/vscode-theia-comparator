@@ -44,7 +44,7 @@ class Tag implements Renderable {
 
     addClass(className: string): void {
         if (this.properties.class) {
-            this.properties.class += ' ' + className.trim()
+            this.properties.class += ' ' + className.trim();
         } else {
             this.properties.class = className.trim();
         }
@@ -72,7 +72,7 @@ class TH extends Tag {
 class Row extends TR {
     constructor(name: string, complex: boolean, ...children: Renderable[]) {
         const text = new TextNode(name);
-        const firstColumn = new TD({ class: complex ? `row-label complex` : `row-label simple` }, complex ? new Tag('b', {}, text) : text);
+        const firstColumn = new TD({ class: complex ? 'row-label complex' : 'row-label simple' }, complex ? new Tag('b', {}, text) : text);
         super({ class: 'bg-info' }, firstColumn, ...children);
     }
 }
@@ -152,7 +152,7 @@ export class HTMLGenerator {
             }
         }));
     </script>
-        `))
+        `));
         const topRowProps = { class: 'ide', style: 'padding: 0 3px;' };
         const namespaceRow = (name: string) => new TR({ class: 'bg-warning' },
             new TD({ colspan: totalColumns.toString() }, new TextNode(`namespace/${name}`)),
@@ -160,8 +160,14 @@ export class HTMLGenerator {
         const firstRow = new TR({ class: 'bg-primary', style: 'position: sticky; top: 0; z-index: 1000' },
             new TH({},
                 new Tag('form', { id: 'report-filter-selector-form', style: 'display: flex; justify-content: space-around; align-items: center; flex-flow: row nowrap; height: 100%; width: 100%;' },
-                    new Tag('label', { for: 'full-report-button' }, new TextNode('Full'), new Tag('input', { type: 'radio', class: 'report-filter-selector', name: 'report-filter-selector', id: 'full-report-button', value: "full", checked: 'true', style: 'margin-left: 8px;' })),
-                    new Tag('label', { for: 'filtered-report-button' }, new TextNode('Filtered'), new Tag('input', { type: 'radio', class: 'report-filter-selector', name: 'report-filter-selector', id: 'filtered-report-button', value: "filtered", style: 'margin-left: 8px;' })),
+                    new Tag('label', { for: 'full-report-button' },
+                        new TextNode('Full'),
+                        new Tag('input', { type: 'radio', class: 'report-filter-selector', name: 'report-filter-selector', id: 'full-report-button', value: 'full', checked: 'true', style: 'margin-left: 8px;' })
+                    ),
+                    new Tag('label', { for: 'filtered-report-button' },
+                        new TextNode('Filtered'),
+                        new Tag('input', { type: 'radio', class: 'report-filter-selector', name: 'report-filter-selector', id: 'filtered-report-button', value: 'filtered', style: 'margin-left: 8px;' })
+                    ),
                 )),
             ...Object.keys(comparisons.theia).map(version => new TH(topRowProps, new TextNode(`Theia ${version}`))),
             new TH(topRowProps, new TextNode(`VSCode ${comparisons.vscodeReferenceVersion}`)),
@@ -199,7 +205,7 @@ export class HTMLGenerator {
                 if (value && typeof value === 'object') {
                     if (key.charAt(0).toLowerCase() === key.charAt(0)) { // Probably a namespace
                         const namespaceRenderables = [namespaceRow(key)];
-                        namespaces.push(namespaceRenderables)
+                        namespaces.push(namespaceRenderables);
                         traverse(value, namespaceRenderables, ...newPathSegments);
                     } else {
                         const complexRow = new Row(key, true);
@@ -217,7 +223,7 @@ export class HTMLGenerator {
                                 complexRow.appendChild(VSCodeColumn(aggregateSuccess));
                             }
                         });
-                        complexRow.appendChild(metadataColumn(...newPathSegments))
+                        complexRow.appendChild(metadataColumn(...newPathSegments));
                         if (!rowContainsProblems(rowSuccess)) {
                             complexRow.addClass('to-filter');
                         }
@@ -237,7 +243,7 @@ export class HTMLGenerator {
                         updateSuccessValue(success, index + numTheiaVersions, valueAtLocation === null ? null : true);
                         entry.appendChild(VSCodeColumn(valueAtLocation));
                     });
-                    entry.appendChild(metadataColumn(...newPathSegments))
+                    entry.appendChild(metadataColumn(...newPathSegments));
 
                     rows.push(entry);
                     if (!appearsInFiltered) {
@@ -261,10 +267,12 @@ export class HTMLGenerator {
 
         const rowContainsProblems = (successes: Array<boolean | null>): boolean => {
             for (let i = 0; i < numTheiaVersions; i++) {
-                if (successes[i] === null || successes[i] === false) return true;
+                if (successes[i] === null || successes[i] === false) {
+                    return true;
+                }
             }
             return false;
-        }
+        };
 
         traverse(Object.values(comparisons.theia)[0].full, namespaces[0]);
         namespaces.forEach(namespaceContents => tbodyFull.appendChildren(...namespaceContents));
