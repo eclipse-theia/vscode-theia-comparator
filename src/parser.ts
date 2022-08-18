@@ -19,8 +19,10 @@ export interface FullAndFilteredComparisons {
     filtered: Comparison;
 }
 
-interface TypeContainer {
-    [key: string]: ts.Type | TypeContainer;
+interface TypeContainer extends RecursiveRecord<NodeAndType> { }
+
+class NodeAndType {
+    constructor(readonly type: ts.Type, readonly node: NamedDeclarations) { }
 }
 
 interface EnhancedChecker extends ts.TypeChecker {
@@ -35,7 +37,7 @@ export class Parser {
         const source = program.getSourceFile(otherVersion);
         const otherTypes = this.buildDeclarationTree(source, checker);
         const missing: Comparison = Object.create(null);
-        const isLeaf = (value: boolean | ts.Type | TypeContainer | Comparison): value is boolean | ts.Type | null => !value || typeof value === 'boolean' || isType(value);
+        const isLeaf = (value: boolean | NodeAndType | TypeContainer | Comparison): value is boolean | NodeAndType | null => !value || typeof value === 'boolean' || isType(value);
         const compare = (reference: TypeContainer | Comparison, other: TypeContainer, result: Comparison): Comparison => {
             Object.entries(reference).forEach(([key, value]) => {
                 const correspondent = other[key];
@@ -90,7 +92,7 @@ export class Parser {
             ) {
                 const simpleNodeName = getName(node);
                 if (simpleNodeName) {
-                    target[simpleNodeName] = checker.getTypeAtLocation(node);
+                    target[simpleNodeName] = new NodeAndType(checker.getTypeAtLocation(node), node);
                 }
             } else if (
                 ts.isModuleDeclaration(node)
@@ -119,12 +121,13 @@ export class Parser {
         const failuresOnly: Comparison = Object.create(null);
         const compare = (vscodeSide: TypeContainer, theiaSide: TypeContainer, result: Comparison, failures: Comparison): FullAndFilteredComparisons => {
             Object.entries(vscodeSide).forEach(([key, target]) => {
-                const correspondent: TypeContainer | ts.Type | undefined = theiaSide[key];
+                const correspondent: TypeContainer | NodeAndType | undefined = theiaSide[key];
                 if (isType(target) && isType(correspondent)) {
-                    const isTheiaAssignableToVscode = checker.isTypeAssignableTo(correspondent, target);
-                    const isVSCodeAssignableToTheia = checker.isTypeAssignableTo(target, correspondent);
-                    result[key] = isTheiaAssignableToVscode && isVSCodeAssignableToTheia;
-                    if (!isTheiaAssignableToVscode || !isVSCodeAssignableToTheia) {
+                    const isTheiaAssignableToVscode = checker.isTypeAssignableTo(correspondent.type, target.type);
+                    const isVSCodeAssignableToTheia = checker.isTypeAssignableTo(target.type, correspondent.type);
+                    const isCompatible = (isTheiaAssignableToVscode && isVSCodeAssignableToTheia) || areTextuallyIdentical(target.node, correspondent.node);
+                    result[key] = isCompatible;
+                    if (!isCompatible) {
                         failures[key] = false;
                     }
                 } else if (isType(target)) {
@@ -147,18 +150,40 @@ export class Parser {
     }
 }
 
-function isType(candidate: Record<string, unknown> | ts.Type): candidate is ts.Type {
-    return typeof candidate?.getConstraint === 'function';
+function isType(candidate: RecursiveRecord<unknown> | NodeAndType): candidate is NodeAndType {
+    return candidate instanceof NodeAndType;
 }
 
-function getName(node: ts.ClassDeclaration | ts.MethodSignature | ts.PropertySignature | ts.ClassElement | ts.InterfaceDeclaration | ts.FunctionDeclaration | ts.EnumDeclaration | ts.VariableDeclaration | ts.TypeAliasDeclaration | ts.ModuleDeclaration): string {
+type NamedDeclarations = ts.ClassDeclaration | ts.MethodSignature | ts.PropertySignature | ts.ClassElement | ts.InterfaceDeclaration | ts.FunctionDeclaration | ts.EnumDeclaration | ts.VariableDeclaration | ts.TypeAliasDeclaration | ts.ModuleDeclaration;
+
+function getName(node: NamedDeclarations): string {
     try {
         if (ts.isConstructorDeclaration(node)) {
             return 'constructor';
         }
         return node.name.getText();
     } catch {
-        // checkType(node);
         return '';
     }
+}
+
+function areTextuallyIdentical(one: NamedDeclarations, other: NamedDeclarations): boolean {
+    const oneText = extractTextWithoutComments(one); const otherText = extractTextWithoutComments(other);
+    return oneText === otherText;
+}
+
+function extractTextWithoutComments(node: ts.Node): string {
+    return node.getChildren()
+        .map(child => {
+            if (ts.isJSDoc(child)) {
+                return ''
+            }
+            if (child.getChildCount() > 0) {
+                return extractTextWithoutComments(child);
+            }
+            const candidate = child.getFullText().slice(child.getLeadingTriviaWidth()).trim();
+            return candidate;
+        })
+        .join('')
+        .replace(/\s/g, '');
 }

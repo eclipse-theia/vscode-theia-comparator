@@ -96,7 +96,7 @@ export class GrabVSCodeVersions extends AbstractVersionGrabber {
     protected async getPathFromCLI(): Promise<[ScannerEntry] | undefined> {
         const relativePathFromCLI = untildify(process.argv.slice(2).find(arg => arg.startsWith('vscode-path='))?.substring('vscode-path='.length) ?? '');
         if (relativePathFromCLI) {
-            if (relativePathFromCLI.endsWith('vscode.d.ts')) {
+            if (relativePathFromCLI.endsWith('.d.ts')) {
                 const absolute = path.resolve(relativePathFromCLI);
                 return (await fs.pathExists(absolute)) ? [{ version: 'local', path: absolute }] : undefined;
             }
