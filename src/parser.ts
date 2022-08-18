@@ -121,8 +121,10 @@ export class Parser {
             Object.entries(vscodeSide).forEach(([key, target]) => {
                 const correspondent: TypeContainer | ts.Type | undefined = theiaSide[key];
                 if (isType(target) && isType(correspondent)) {
-                    const isCompatible = result[key] = checker.isTypeAssignableTo(correspondent, target);
-                    if (!isCompatible) {
+                    const isTheiaAssignableToVscode = checker.isTypeAssignableTo(correspondent, target);
+                    const isVSCodeAssignableToTheia = checker.isTypeAssignableTo(target, correspondent);
+                    result[key] = isTheiaAssignableToVscode && isVSCodeAssignableToTheia;
+                    if (!isTheiaAssignableToVscode || !isVSCodeAssignableToTheia) {
                         failures[key] = false;
                     }
                 } else if (isType(target)) {
