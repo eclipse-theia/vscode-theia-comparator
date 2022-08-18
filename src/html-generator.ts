@@ -117,7 +117,7 @@ export class HTMLGenerator {
     </style>
         `));
         const body = new Tag('body');
-        const table = new Tag('table');
+        const table = new Tag('table', { style: 'margin: auto;' });
         const thead = new Tag('thead');
         const tbodyFull = new Tag('tbody', { id: 'full-report' });
         table.appendChildren(thead, tbodyFull);
@@ -172,7 +172,7 @@ export class HTMLGenerator {
             ...Object.keys(comparisons.theia).map(version => new TH(topRowProps, new TextNode(`Theia ${version}`))),
             new TH(topRowProps, new TextNode(`VSCode ${comparisons.vscodeReferenceVersion}`)),
             ...Object.keys(comparisons.vscode).map(version => new TH(topRowProps, new TextNode(`VSCode ${version}`))),
-            new TH({}, new TextNode('Note'))
+            new TH({ style: 'text-align: center;' }, new TextNode('Note'))
         );
         thead.appendChild(firstRow);
         const namespaces = new Array<Renderable[]>([namespaceRow('root')]);
