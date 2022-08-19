@@ -87,7 +87,7 @@ class Status extends TD {
 
 const CORRECT = new Status('success', '✔️');
 const ABSENT = new Status('danger', '✖️');
-const INCORRECT = new Status('warning', '⚠️');
+const INCORRECT = new Status('success', '🟡');
 const NOT_APPLICABLE = new Status('light', 'N/A');
 const EXPECTED = new Status('info', '✔️');
 
