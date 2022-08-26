@@ -12,7 +12,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { Comparator } from './comparator';
-import { HTMLGenerator } from './html-generator';
+import { HTMLGenerator } from './html-generator/html-generator';
 import { GrabVSCodeVersions } from './grab-vscode-versions';
 import { GrabTheiaVersions } from './grab-theia-versions';
 import { parseInfos } from './infos';
@@ -23,6 +23,7 @@ async function init() {
     const theiaEntries = await new GrabTheiaVersions().grab();
     const vsCodeEntries = await new GrabVSCodeVersions().grab();
 
+    console.log('⚙️  Running comparisons...');
     const comparisons = Comparator.compare(vsCodeEntries, theiaEntries);
 
     // Parse additional information
@@ -37,15 +38,6 @@ async function init() {
     const outputFile = path.resolve(__dirname, '../out', 'status.html');
     fs.writeFileSync(outputFile, content);
     console.log(`✍️  HTML status written at ${outputFile}`);
-
-    // // Generate filtered HTML report only containing entries unsupported in at least one theia version
-    // console.log('⚙️  Generating filtered HTML report...');
-    // comparator.removeSupported();
-    // const filteredHtmlGenerator = new HTMLGenerator(vsCodeEntries, theiaEntries, comparator.result(), infos);
-    // const filteredContent = filteredHtmlGenerator.generate();
-    // const filteredOutputFile = path.resolve(__dirname, '../out', 'filtered-status.html');
-    // fs.writeFileSync(filteredOutputFile, filteredContent);
-    // console.log(`✍️  Filtered HTML status written at ${filteredOutputFile}`);
 }
 
 if (!process.env.GITHUB_TOKEN) {

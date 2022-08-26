@@ -11,3 +11,14 @@
 export interface RecursiveRecord<T> {
     [key: string]: T | RecursiveRecord<T>;
 }
+
+export function retrieveValue<T>(target: RecursiveRecord<T>, path: string[]): RecursiveRecord<T> | T | undefined {
+    let current: RecursiveRecord<T> | T | undefined = target;
+    for (const key of path) {
+        if (!current || typeof current !== 'object') {
+            return undefined;
+        }
+        current = current[key];
+    }
+    return current;
+}
