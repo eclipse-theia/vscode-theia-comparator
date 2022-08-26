@@ -8,7 +8,15 @@
 * SPDX-License-Identifier: EPL-2.0
 **********************************************************************/
 
+export enum Available {
+    Yes = 'yes',
+    Defined = 'defined',
+    No = 'no',
+    NA = 'N/A',
+    Stubbed = 'stubbed'
+}
+
 export interface Included {
     version: string;
-    available: 'yes' | 'defined' | 'no' | 'N/A';
+    available: Available;
 }

@@ -11,6 +11,7 @@
 import { ScannerEntry } from './scanner-entry';
 import { Parser } from './parser';
 import { DocEntry } from './doc-entry';
+import { Available } from './included';
 
 export class Comparator {
 
@@ -91,6 +92,10 @@ export class Comparator {
         return oneWay.length === otherWay.length && oneWay.length === constructor1.parameters.length;
     }
 
+    resolveYesOrStubbed(stubbed: boolean) {
+        return stubbed ? Available.Stubbed : Available.Yes;
+    }
+
     // now compare commands
 
     compare(): void {
@@ -105,26 +110,26 @@ export class Comparator {
             if (vscodeCommands) {
                 vscodeCommands.forEach(command => {
                     command.includedIn = [];
-                    command.includedIn.push({ version: `vscode/${latestVersion}`, available: 'defined' });
+                    command.includedIn.push({ version: `vscode/${latestVersion}`, available: Available.Defined });
 
                     if (command.members) {
                         command.members.forEach(member => {
                             member.includedIn = [];
-                            member.includedIn.push({ version: `vscode/${latestVersion}`, available: 'defined' });
+                            member.includedIn.push({ version: `vscode/${latestVersion}`, available: Available.Defined });
                         });
                     }
 
                     if (command.constructors) {
                         command.constructors.forEach(constructor => {
                             constructor.includedIn = [];
-                            constructor.includedIn.push({ version: `vscode/${latestVersion}`, available: 'defined' });
+                            constructor.includedIn.push({ version: `vscode/${latestVersion}`, available: Available.Defined });
                         });
                     }
 
                     if (command.unions) {
                         command.unions.forEach(union => {
                             union.includedIn = [];
-                            union.includedIn.push({ version: `vscode/${latestVersion}`, available: 'defined' });
+                            union.includedIn.push({ version: `vscode/${latestVersion}`, available: Available.Defined });
                         });
                     }
 
@@ -162,17 +167,17 @@ export class Comparator {
                         }
                         if (!inCurrent) {
                             // need to flag it as 'N/A'
-                            docEntryLatestVsCodeCommand.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: 'N/A' });
+                            docEntryLatestVsCodeCommand.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: Available.NA });
 
                             // Flag all members as N/A
                             if (docEntryLatestVsCodeCommand.members && docEntryLatestVsCodeCommand.members.length > 0) {
                                 docEntryLatestVsCodeCommand.members.forEach(member => {
-                                    member.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: 'N/A' });
+                                    member.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: Available.NA });
                                 });
                             }
                         } else {
                             // it's there, add it
-                            docEntryLatestVsCodeCommand.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: 'defined' });
+                            docEntryLatestVsCodeCommand.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: Available.Defined });
 
                             // now check members
                             if (docEntryLatestVsCodeCommand.members && docEntryLatestVsCodeCommand.members.length > 0) {
@@ -183,9 +188,9 @@ export class Comparator {
 
                                     // it's there, add it
                                     if (searchedMember) {
-                                        member.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: 'defined' });
+                                        member.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: Available.Defined });
                                     } else {
-                                        member.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: 'N/A' });
+                                        member.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: Available.NA });
                                     }
 
                                 });
@@ -200,9 +205,9 @@ export class Comparator {
 
                                     // it's there, add it
                                     if (searchedConstructor) {
-                                        constructor.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: 'defined' });
+                                        constructor.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: Available.Defined });
                                     } else {
-                                        constructor.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: 'N/A' });
+                                        constructor.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: Available.NA });
                                     }
 
                                 });
@@ -217,9 +222,9 @@ export class Comparator {
 
                                     // it's there, add it
                                     if (searchedUnion) {
-                                        union.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: 'defined' });
+                                        union.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: Available.Defined });
                                     } else {
-                                        union.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: 'N/A' });
+                                        union.includedIn.push({ version: `vscode/${this.vsCodeEntries[i].version}`, available: Available.NA });
                                     }
 
                                 });
@@ -264,23 +269,23 @@ export class Comparator {
                         }
                         if (!inCurrent) {
                             // need to flag it as 'no'
-                            docEntryLatestVsCodeCommand.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: 'no' });
+                            docEntryLatestVsCodeCommand.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: Available.No });
 
                             // Flag all members as N/A
                             if (docEntryLatestVsCodeCommand.members && docEntryLatestVsCodeCommand.members.length > 0) {
                                 docEntryLatestVsCodeCommand.members.forEach(member => {
-                                    member.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: 'no' });
+                                    member.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: Available.No });
                                 });
                             }
 
                             if (docEntryLatestVsCodeCommand.constructors && docEntryLatestVsCodeCommand.constructors.length > 0) {
                                 docEntryLatestVsCodeCommand.constructors.forEach(constructor => {
-                                    constructor.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: 'no' });
+                                    constructor.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: Available.No });
                                 });
                             }
                         } else {
                             // it's there, add it
-                            docEntryLatestVsCodeCommand.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: 'yes' });
+                            docEntryLatestVsCodeCommand.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: this.resolveYesOrStubbed(inCurrent.stubbed) });
 
                             // now check members
                             if (docEntryLatestVsCodeCommand.members && docEntryLatestVsCodeCommand.members.length > 0) {
@@ -291,9 +296,9 @@ export class Comparator {
 
                                     // it's there, add it
                                     if (searchedMember) {
-                                        member.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: 'yes' });
+                                        member.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: this.resolveYesOrStubbed(searchedMember.stubbed) });
                                     } else {
-                                        member.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: 'no' });
+                                        member.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: Available.No });
                                     }
 
                                 });
@@ -307,9 +312,9 @@ export class Comparator {
 
                                     // it's there, add it
                                     if (searchedConstructor) {
-                                        constructor.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: 'yes' });
+                                        constructor.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: this.resolveYesOrStubbed(searchedConstructor.stubbed) });
                                     } else {
-                                        constructor.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: 'no' });
+                                        constructor.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: Available.No });
                                     }
 
                                 });
@@ -323,9 +328,9 @@ export class Comparator {
 
                                     // it's there, add it
                                     if (searchedUnion) {
-                                        union.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: 'yes' });
+                                        union.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: this.resolveYesOrStubbed(searchedUnion.stubbed) });
                                     } else {
-                                        union.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: 'no' });
+                                        union.includedIn.unshift({ version: `theia/${theiaEntry.version}`, available: Available.No });
                                     }
 
                                 });
@@ -396,7 +401,7 @@ export class Comparator {
         return entry.includedIn && entry.includedIn.reduce((result, included) => {
             // Only look at theia versions.
             if (included.version.startsWith('theia/')) {
-                return result && included.available === 'yes';
+                return result && included.available === Available.Yes;
             }
             return result;
         }, true);

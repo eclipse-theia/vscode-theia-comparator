@@ -15,6 +15,7 @@ export interface DocEntry {
     type?: string,
     optional?: boolean,
     documentation?: string,
+    stubbed?: boolean,
     kind?: string,
     signatures?: DocEntry[],
     parameters?: DocEntry[],

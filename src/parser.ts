@@ -10,6 +10,7 @@
 
 import * as ts from 'typescript';
 import { DocEntry } from './doc-entry';
+import { Available } from './included';
 
 export class Parser {
 
@@ -22,6 +23,7 @@ export class Parser {
     ({
         name: symbol.getName(),
         documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
+        stubbed: this.hasStubbedTag(symbol.getJsDocTags(this.checker)),
         type: this.checker.typeToString(
             this.checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration!)
         ),
@@ -34,6 +36,7 @@ export class Parser {
         const details = {
             name: symbol.getName(),
             documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
+            stubbed: this.hasStubbedTag(symbol.getJsDocTags(this.checker)),
             type: this.checker.typeToString(enumType),
             handleType: 'EnumDeclaration',
             members: []
@@ -44,7 +47,9 @@ export class Parser {
                 let typeDoc: DocEntry = {};
                 typeDoc = {
                     name: type.symbol.getEscapedName(),
-                    value: '' + (type as ts.LiteralType).value
+                    value: '' + (type as ts.LiteralType).value,
+                    documentation: ts.displayPartsToString(type.symbol.getDocumentationComment(this.checker)),
+                    stubbed: this.hasStubbedTag(type.symbol.getJsDocTags(this.checker))
                 };
                 details.members.push(typeDoc);
 
@@ -68,6 +73,10 @@ export class Parser {
             (((prevHash << 5) - prevHash) + currVal.charCodeAt(0)) | 0, 0);
     }
 
+    private hasStubbedTag(tags: { name: string }[]): boolean {
+        return !!tags.find((tag) => tag.name === Available.Stubbed);
+    }
+
     private serializeFunction(node: ts.Node, symbol: ts.Symbol) {
 
         const funcType = this.checker.getTypeAtLocation(node);
@@ -79,6 +88,7 @@ export class Parser {
         const details: DocEntry = {
             name: symbol.getName(),
             documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
+            stubbed: this.hasStubbedTag(symbol.getJsDocTags(this.checker)),
             return: returnType,
             handleType: 'FunctionDeclaration',
             parameters: []
@@ -112,6 +122,7 @@ export class Parser {
         const details = {
             name: symbol.getName(),
             documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
+            stubbed: this.hasStubbedTag(symbol.getJsDocTags(this.checker)),
             type: this.checker.typeToString(interfaceType),
             handleType: 'InterfaceDeclaration',
             members: []
@@ -134,6 +145,7 @@ export class Parser {
             } catch (error) {
                 memberDoc.documentation = '';
             }
+            memberDoc.stubbed = this.hasStubbedTag(member.getJsDocTags(this.checker));
             memberDoc.return = this.checker.typeToString(this.checker.getTypeAtLocation(member.declarations[0]));
             details.members.push(memberDoc);
         });
@@ -147,6 +159,7 @@ export class Parser {
         const details = {
             name: symbol.getName(),
             documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
+            stubbed: this.hasStubbedTag(symbol.getJsDocTags(this.checker)),
             type: this.checker.typeToString(interfaceType),
             handleType: 'TypeAliasDeclaration',
             unions: []
@@ -224,7 +237,8 @@ export class Parser {
         if (memberDeclarations.length > 0) {
             const memberDoc: DocEntry = {};
             memberDoc.documentation = ts.displayPartsToString(symbol.getDocumentationComment(this.checker));
-            memberDoc.name = symbol.name;
+            memberDoc.stubbed = this.hasStubbedTag(symbol.getJsDocTags(this.checker)),
+                memberDoc.name = symbol.name;
 
             const callSignature = this.getCallSignature(symbol);
             if (callSignature) {
@@ -286,6 +300,7 @@ export class Parser {
         return {
             name: symbol.getName(),
             documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
+            stubbed: this.hasStubbedTag(symbol.getJsDocTags(this.checker)),
             type: this.checker.typeToString(
                 this.checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration!)
             ),
@@ -301,6 +316,7 @@ export class Parser {
         const details = {
             name: symbol.getName(),
             documentation: ts.displayPartsToString(symbol.getDocumentationComment(this.checker)),
+            stubbed: this.hasStubbedTag(symbol.getJsDocTags(this.checker)),
             type: this.checker.typeToString(variableType),
             handleType: 'VariableDeclaration'
         };

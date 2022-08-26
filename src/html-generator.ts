@@ -11,6 +11,7 @@
 import { ScannerEntry } from './scanner-entry';
 import { DocEntry } from './doc-entry';
 import { Infos, resolveInfo } from './infos';
+import { Available } from './included';
 
 export class HTMLGenerator {
 
@@ -65,7 +66,9 @@ a { color: #0056b3; }
                 row += this.generateNoteColumn(namespaceKey, command);
                 row += '</div>';
 
-                if (command.constructors && command.constructors.length > 0 && command.includedIn[0].available === 'yes') {
+                const state = command.includedIn[0].available;
+                const isCommandAvailable = state === Available.Yes || state === Available.Stubbed;
+                if (command.constructors && command.constructors.length > 0 && isCommandAvailable) {
 
                     command.constructors.forEach(constructor => {
                         let subRow = `<div class="row bg-info"><div class="col-4 command">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;constructor(${this.constructorPrettyName(constructor)})</div>`;
@@ -79,7 +82,7 @@ a { color: #0056b3; }
                 }
 
                 // has members ? if yes then add lines for methods
-                if (command.members && command.members.length > 0 && command.includedIn[0].available === 'yes') {
+                if (command.members && command.members.length > 0 && isCommandAvailable) {
 
                     command.members.forEach(member => {
                         let subRow = `<div class="row bg-info"><div class="col-4 command" title="${this.htmlEntities(member.documentation)}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${member.name}</div>`;
@@ -93,7 +96,7 @@ a { color: #0056b3; }
                 }
 
                 // has unions ? if yes then add lines for methods
-                if (command.unions && command.unions.length > 0 && command.includedIn[0].available === 'yes') {
+                if (command.unions && command.unions.length > 0 && isCommandAvailable) {
 
                     command.unions.forEach(union => {
                         let subRow = `<div class="row bg-info"><div class="col-4 command">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${union.name}</div>`;
@@ -144,7 +147,7 @@ a { color: #0056b3; }
 
     private htmlEntities(content: string): string {
         if (!content) {
-            return 'N/A';
+            return Available.NA;
         }
         return content.replace(/[\u00A0-\u9999<>\&]/gim, i =>
             '&#' + i.charCodeAt(0) + ';');
@@ -156,23 +159,28 @@ a { color: #0056b3; }
         }
         let columns = '';
         element.includedIn.forEach(included => {
-            columns += '<div class="col ';
+            columns += '<div class="col text-center ';
             let txt = '';
-            if (included.available === 'N/A') {
-                txt = 'N/A';
+            let tooltip = included.version;
+            if (included.available === Available.NA) {
+                txt = Available.NA;
                 columns += 'bg-light';
-            } else if (included.available === 'yes') {
+            } else if (included.available === Available.Yes) {
                 txt = '<i class="fa fa-check"></i>';
                 columns += 'bg-success';
-            } else if (included.available === 'defined') {
+            } else if (included.available === Available.Stubbed) {
+                txt = '<strong>stubbed</strong>';
+                columns += 'bg-warning';
+                tooltip = tooltip + '&#013;(stubbed)';
+            } else if (included.available === Available.Defined) {
                 txt = '<i class="fa fa-check"></i>';
                 columns += 'bg-info';
-            } else if (included.available === 'no') {
+            } else if (included.available === Available.No) {
                 txt = '<i class="fa fa-times"></i>';
                 columns += 'bg-danger';
             }
 
-            columns += `" style="max-width: 90px;" title="${included.version}">${txt}</div>`;
+            columns += `" style="max-width: 90px;" title="${tooltip}">${txt}</div>`;
         });
 
         return columns;
@@ -180,7 +188,6 @@ a { color: #0056b3; }
 
     private generateNoteColumn(namespace: string, element?: DocEntry, subElement?: DocEntry): string {
         const info = resolveInfo(this.infos, namespace, element?.name, subElement?.name);
-        const column = `<div class="col-auto">${info?._note ?? ''}</div>`;
-        return column;
+        return `<div class="col-auto">${info?._note ?? ''}</div>`;
     }
 }
