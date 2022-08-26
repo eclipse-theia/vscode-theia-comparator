@@ -12,7 +12,14 @@
 import * as ts from 'typescript';
 import { RecursiveRecord } from './recursive-record';
 
-export interface Comparison extends RecursiveRecord<boolean | null> { }
+export const enum SupportLevels {
+    None,
+    Stubbed,
+    Partial,
+    Full,
+}
+
+export interface Comparison extends RecursiveRecord<SupportLevels> { }
 
 export interface FullAndFilteredComparisons {
     full: Comparison;
@@ -43,7 +50,7 @@ export class Parser {
                 const correspondent = other[key];
                 if (isLeaf(value)) {
                     if (correspondent === undefined) {
-                        result[key] = null;
+                        result[key] = SupportLevels.None;
                     }
                 } else {
                     const applicableCorrespondent: TypeContainer = isLeaf(correspondent) || !correspondent ? Object.create(null) : correspondent;
@@ -123,15 +130,21 @@ export class Parser {
             Object.entries(vscodeSide).forEach(([key, target]) => {
                 const correspondent: TypeContainer | NodeAndType | undefined = theiaSide[key];
                 if (isType(target) && isType(correspondent)) {
-                    const isTheiaAssignableToVscode = checker.isTypeAssignableTo(correspondent.type, target.type);
-                    const isVSCodeAssignableToTheia = checker.isTypeAssignableTo(target.type, correspondent.type);
-                    const isCompatible = (isTheiaAssignableToVscode && isVSCodeAssignableToTheia) || areTextuallyIdentical(target.node, correspondent.node);
-                    result[key] = isCompatible;
-                    if (!isCompatible) {
-                        failures[key] = false;
+                    const isStubbed = ts.getJSDocTags(correspondent.node).some(tag => tag.tagName.escapedText === 'stubbed');
+                    if (isStubbed) {
+                        result[key] = SupportLevels.Stubbed;
+                        failures[key] = SupportLevels.Stubbed;
+                    } else {
+                        const isTheiaAssignableToVscode = checker.isTypeAssignableTo(correspondent.type, target.type);
+                        const isVSCodeAssignableToTheia = checker.isTypeAssignableTo(target.type, correspondent.type);
+                        const isCompatible = (isTheiaAssignableToVscode && isVSCodeAssignableToTheia) || areTextuallyIdentical(target.node, correspondent.node);
+                        result[key] = isCompatible ? SupportLevels.Full : SupportLevels.Partial;
+                        if (!isCompatible) {
+                            failures[key] = SupportLevels.Partial;
+                        }
                     }
                 } else if (isType(target)) {
-                    const value = correspondent ? false : null;
+                    const value = correspondent ? SupportLevels.Partial : SupportLevels.None;
                     result[key] = value;
                     failures[key] = value;
                 } else {

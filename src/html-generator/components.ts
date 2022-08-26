@@ -9,7 +9,7 @@
 **********************************************************************/
 
 import { Infos } from "../infos";
-import { Comparison } from "../parser";
+import { Comparison, SupportLevels } from "../parser";
 import { retrieveValue } from "../recursive-record";
 
 export interface Renderable {
@@ -138,20 +138,21 @@ export class MetadataColumn extends TD {
 	}
 };
 
-export const theiaColumn = (value: boolean | undefined | null | Comparison): Renderable => {
+export const theiaColumn = (value: SupportLevels | Comparison): Renderable => {
 	switch (value) {
 		case undefined:
-		case null:
+		case SupportLevels.None:
 			return ABSENT;
-		case true: return CORRECT;
+		case SupportLevels.Full: return CORRECT;
+		case SupportLevels.Stubbed: return STUBBED;
 		default:
 			return INCORRECT;
 	}
 };
 
-export const VSCodeColumn = (value: boolean | undefined | null | Comparison): Renderable => {
+export const VSCodeColumn = (value: SupportLevels | Comparison): Renderable => {
 	switch (value) {
-		case null: return NOT_APPLICABLE;
+		case SupportLevels.None: return NOT_APPLICABLE;
 		default: return EXPECTED;
 	}
 };

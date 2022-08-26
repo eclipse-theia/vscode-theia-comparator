@@ -10,7 +10,7 @@
 
 import { Infos } from '../infos';
 import { VersionComparisons } from '../comparator';
-import { Comparison } from '../parser';
+import { Comparison, SupportLevels } from '../parser';
 import { filterComponent, HTML, MetadataColumn, NamespaceRow, Renderable, Row, Tag, TD, TextNode, TH, theiaColumn, TR, VSCodeColumn } from './components';
 import { styles } from './style';
 import { script } from './script';
@@ -54,8 +54,8 @@ export class HTMLGenerator {
 
         const namespaces = new Array<Renderable[]>([new NamespaceRow('root', totalColumns)]);
 
-        const traverse = (current: Comparison, rows: Renderable[], ...pathSegments: string[]): Array<boolean | null> => {
-            const success: Array<boolean | null | undefined> = new Array(numTheiaVersions + numVscodeVersions).fill(undefined);
+        const traverse = (current: Comparison, rows: Renderable[], ...pathSegments: string[]): Array<SupportLevels> => {
+            const success: Array<SupportLevels> = new Array(numTheiaVersions + numVscodeVersions).fill(undefined);
             Object.keys(current).sort().forEach(key => {
                 const value = current[key];
                 const newPathSegments = [...pathSegments, key];
@@ -71,10 +71,10 @@ export class HTMLGenerator {
                         rowSuccess.forEach((aggregateSuccess, index) => {
                             if (index < numTheiaVersions) {
                                 // Empty interfaces will leave the value undefined.
-                                complexRow.appendChild(theiaColumn(aggregateSuccess === undefined ? true : aggregateSuccess));
+                                complexRow.appendChild(theiaColumn(aggregateSuccess === undefined ? SupportLevels.Full : aggregateSuccess));
                             }
                             if (index === numTheiaVersions - 1) {
-                                complexRow.appendChild(VSCodeColumn(true)); // Reference version;
+                                complexRow.appendChild(VSCodeColumn(SupportLevels.Full)); // Reference version;
                             }
                             if (index >= numTheiaVersions) {
                                 complexRow.appendChild(VSCodeColumn(aggregateSuccess));
@@ -90,14 +90,14 @@ export class HTMLGenerator {
                     const entry = new Row(key, false);
                     Object.values(comparisons.theia).forEach((version, index) => {
                         const valueAtLocation = retrieveValue(version.full, newPathSegments);
-                        appearsInFiltered ||= valueAtLocation === null || valueAtLocation === false;
-                        updateSuccessValue(success, index, (valueAtLocation && typeof valueAtLocation === 'object') ? false : valueAtLocation as boolean | null);
+                        appearsInFiltered ||= valueAtLocation === SupportLevels.None || valueAtLocation === SupportLevels.Partial || valueAtLocation === SupportLevels.Stubbed;
+                        updateSuccessValue(success, index, typeof valueAtLocation === 'object' ? SupportLevels.Partial : valueAtLocation);
                         entry.appendChild(theiaColumn(valueAtLocation));
                     });
-                    entry.appendChild(VSCodeColumn(true)); // Reference Version
+                    entry.appendChild(VSCodeColumn(SupportLevels.Full)); // Reference Version
                     Object.values(comparisons.vscode).forEach((version, index) => {
                         const valueAtLocation = retrieveValue(version, newPathSegments);
-                        updateSuccessValue(success, index + numTheiaVersions, valueAtLocation === null ? null : true);
+                        updateSuccessValue(success, index + numTheiaVersions, valueAtLocation === SupportLevels.None ? SupportLevels.None : SupportLevels.Full);
                         entry.appendChild(VSCodeColumn(valueAtLocation));
                     });
                     entry.appendChild(new MetadataColumn(notes, ...newPathSegments));
@@ -117,20 +117,21 @@ export class HTMLGenerator {
 
 }
 
-const updateSuccessValue = (successes: Array<boolean | null>, index: number, newValue: boolean | null) => {
-    if (successes[index] === false) { return; }
-    if (successes[index] === true) {
-        successes[index] = newValue || false;
-    } else if (successes[index] === null && newValue !== null) {
-        successes[index] = false;
-    } else if (successes[index] === undefined) {
+const updateSuccessValue = (successes: Array<SupportLevels>, index: number, newValue: SupportLevels) => {
+    const current = successes[index];
+    if (current === SupportLevels.Partial || current === newValue) { return; }
+    if (current === undefined) {
         successes[index] = newValue;
+    } else if (current === SupportLevels.Full) {
+        successes[index] = SupportLevels.Partial;
+    } else {
+        successes[index] = Math.max(current, newValue);
     }
 };
 
-const rowContainsProblems = (successes: Array<boolean | null>, numTheiaVersions: number): boolean => {
+const rowContainsProblems = (successes: Array<SupportLevels>, numTheiaVersions: number): boolean => {
     for (let i = 0; i < numTheiaVersions; i++) {
-        if (successes[i] === null || successes[i] === false) {
+        if (successes[i] !== SupportLevels.Full && successes[i] !== undefined) {
             return true;
         }
     }
