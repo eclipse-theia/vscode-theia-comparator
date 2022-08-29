@@ -50,13 +50,18 @@ th.left {
 	background-color: rgba(0, 0, 0, 0.075);
 }
 
-th.left.complex {
+th.left.depth-1 {
 	padding-left: 0.2rem;
+	font-weight: bolder;
+}
+
+th.left.depth-2 {
+	padding-left: 1.5rem;
 	font-weight: bold;
 }
 
-th.left.simple {
-	padding-left: 1.5rem;
+th.left.depth-3 {
+	padding:left: 2.8rem;
 	font-weight: normal;
 }
 

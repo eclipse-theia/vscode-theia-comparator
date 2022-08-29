@@ -59,13 +59,14 @@ export class HTMLGenerator {
             Object.keys(current).sort().forEach(key => {
                 const value = current[key];
                 const newPathSegments = [...pathSegments, key];
+                const effectiveDepth = Math.max(rows === namespaces[0] ? newPathSegments.length : (newPathSegments.length - 1), 1);
                 if (value && typeof value === 'object') {
                     if (key.charAt(0).toLowerCase() === key.charAt(0)) { // Probably a namespace
                         const namespaceRenderables = [new NamespaceRow(key, totalColumns)];
                         namespaces.push(namespaceRenderables);
                         traverse(value, namespaceRenderables, ...newPathSegments);
                     } else {
-                        const complexRow = new Row(key, true);
+                        const complexRow = new Row(key, effectiveDepth);
                         rows.push(complexRow);
                         const rowSuccess = traverse(value, rows, ...newPathSegments);
                         rowSuccess.forEach((aggregateSuccess, index) => {
@@ -87,7 +88,7 @@ export class HTMLGenerator {
                     }
                 } else {
                     let appearsInFiltered = false;
-                    const entry = new Row(key, false);
+                    const entry = new Row(key, effectiveDepth);
                     Object.values(comparisons.theia).forEach((version, index) => {
                         const valueAtLocation = retrieveValue(version.full, newPathSegments);
                         appearsInFiltered ||= valueAtLocation === SupportLevels.None || valueAtLocation === SupportLevels.Partial || valueAtLocation === SupportLevels.Stubbed;
