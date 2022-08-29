@@ -87,8 +87,7 @@ export class Parser {
 
         const visit = (target: TypeContainer) => (node: ts.Node) => {
             if (
-                ts.isEnumDeclaration(node)
-                || ts.isVariableDeclaration(node)
+                ts.isVariableDeclaration(node)
                 || ts.isTypeAliasDeclaration(node)
                 || ts.isFunctionDeclaration(node)
                 || ts.isPropertyDeclaration(node)
@@ -96,6 +95,7 @@ export class Parser {
                 || ts.isMethodDeclaration(node)
                 || ts.isPropertySignature(node)
                 || ts.isMethodSignature(node)
+                || ts.isEnumMember(node)
             ) {
                 const simpleNodeName = getName(node);
                 if (simpleNodeName) {
@@ -103,6 +103,7 @@ export class Parser {
                 }
             } else if (
                 ts.isModuleDeclaration(node)
+                || ts.isEnumDeclaration(node)
                 || ts.isClassDeclaration(node)
                 || ts.isInterfaceDeclaration(node)
             ) {
@@ -167,7 +168,7 @@ function isType(candidate: RecursiveRecord<unknown> | NodeAndType): candidate is
     return candidate instanceof NodeAndType;
 }
 
-type NamedDeclarations = ts.ClassDeclaration | ts.MethodSignature | ts.PropertySignature | ts.ClassElement | ts.InterfaceDeclaration | ts.FunctionDeclaration | ts.EnumDeclaration | ts.VariableDeclaration | ts.TypeAliasDeclaration | ts.ModuleDeclaration;
+type NamedDeclarations = ts.ClassDeclaration | ts.MethodSignature | ts.PropertySignature | ts.ClassElement | ts.InterfaceDeclaration | ts.FunctionDeclaration | ts.EnumDeclaration | ts.VariableDeclaration | ts.TypeAliasDeclaration | ts.ModuleDeclaration | ts.EnumMember;
 
 function getName(node: NamedDeclarations): string {
     try {
