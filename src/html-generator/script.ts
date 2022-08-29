@@ -8,7 +8,7 @@
 * SPDX-License-Identifier: EPL-2.0
 **********************************************************************/
 
-import { Tag, TextNode } from "./components"
+import { Tag, TextNode } from './components';
 
 const scriptCode = `
 const form = document.getElementById('report-filter-selector-form');
@@ -39,6 +39,6 @@ const enactFilter = () => {
 };
 Array.from(radioButtons).forEach(button => button.addEventListener('change', enactFilter));
 enactFilter();
-`
+`;
 
-export const script = new Tag('script', {}, new TextNode(scriptCode))
+export const script = new Tag('script', {}, new TextNode(scriptCode));

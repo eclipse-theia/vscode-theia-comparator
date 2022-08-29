@@ -78,7 +78,7 @@ export class Row extends TR {
 
 export class NamespaceRow extends TR {
     constructor(name: string, columns: number) {
-        super({}, new TD({ class: 'neutral', colspan: columns.toString() }, new TextNode(`namespace/${name}`)),);
+        super({}, new TD({ class: 'neutral', colspan: columns.toString() }, new TextNode(`namespace/${name}`)), );
     }
 }
 

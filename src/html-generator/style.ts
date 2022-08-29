@@ -8,7 +8,7 @@
 * SPDX-License-Identifier: EPL-2.0
 **********************************************************************/
 
-import { Tag, TextNode } from "./components"
+import { Tag, TextNode } from './components';
 
 const styleRules = `
 body {
@@ -108,6 +108,6 @@ td .badge.neutral {
 	color: #fff;
 	background-color: #6c757d;
 }
-`
+`;
 
 export const styles = new Tag('style', {}, new TextNode(styleRules));
