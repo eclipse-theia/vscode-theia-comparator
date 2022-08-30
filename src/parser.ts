@@ -132,7 +132,7 @@ export class Parser {
             Object.entries(vscodeSide).forEach(([key, target]) => {
                 const correspondent: TypeContainer | NodeAndType | undefined = theiaSide[key];
                 if (isType(target) && isType(correspondent)) {
-                    const isStubbed = ts.getJSDocTags(correspondent.node).some(tag => tag.tagName.escapedText === 'stubbed');
+                    const isStubbed = (correspondent.type.symbol?.declarations ?? []).flatMap(node => ts.getJSDocTags(node)).some(tag => tag.tagName.escapedText === 'stubbed');
                     if (isStubbed) {
                         result[key] = SupportLevels.Stubbed;
                         failures[key] = SupportLevels.Stubbed;
