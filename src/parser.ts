@@ -9,6 +9,7 @@
 **********************************************************************/
 
 /* tslint:disable */
+import { type } from 'os';
 import * as ts from 'typescript';
 import { RecursiveRecord } from './recursive-record';
 
@@ -33,7 +34,7 @@ class NodeAndType {
 }
 
 interface EnhancedChecker extends ts.TypeChecker {
-    isTypeAssignableTo(source: ts.Type, target: ts.Type);
+    isTypeAssignableTo(source: ts.Type, target: ts.Type): boolean;
 }
 
 export class Parser {
@@ -136,9 +137,17 @@ export class Parser {
                         result[key] = SupportLevels.Stubbed;
                         failures[key] = SupportLevels.Stubbed;
                     } else {
-                        const isTheiaAssignableToVscode = checker.isTypeAssignableTo(correspondent.type, target.type);
-                        const isVSCodeAssignableToTheia = checker.isTypeAssignableTo(target.type, correspondent.type);
-                        const isCompatible = (isTheiaAssignableToVscode && isVSCodeAssignableToTheia) || areTextuallyIdentical(target.node, correspondent.node);
+                        let isCompatible;
+                        // Is a function or method with several overload declarations - TS will automatically merge declarations, so to get extra detail, we fall back to text
+                        if ((ts.isFunctionDeclaration(target.node) || ts.isMethodDeclaration(target.node)) && target.type.symbol.declarations.length > 1) {
+                            const targetDeclarations = target.type.symbol.declarations.map(node => extractTextWithoutComments(node));
+                            const correspondingDeclarations = correspondent.type.symbol.declarations.map(node => extractTextWithoutComments(node));
+                            isCompatible = targetDeclarations.every(declaration => correspondingDeclarations.some(candidate => candidate === declaration));
+                        } else {
+                            const isTheiaAssignableToVscode = checker.isTypeAssignableTo(correspondent.type, target.type);
+                            const isVSCodeAssignableToTheia = checker.isTypeAssignableTo(target.type, correspondent.type);
+                            isCompatible = (isTheiaAssignableToVscode && isVSCodeAssignableToTheia) || areTextuallyIdentical(target.node, correspondent.node);
+                        }
                         result[key] = isCompatible ? SupportLevels.Full : SupportLevels.Partial;
                         if (!isCompatible) {
                             failures[key] = SupportLevels.Partial;
