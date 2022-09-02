@@ -25,11 +25,13 @@ export class Comparator {
         const vscodeReferenceEntry = vscodeEntries[0];
         let referenceComparison: Comparison;
         const theia = theiaEntries.reduce<Record<string, FullAndFilteredComparisons>>((comparisons, current) => {
+            this.logWork(current.path);
             comparisons[current.version] = Parser.compareTheiaToVscode(current.path, vscodeReferenceEntry.path, ...current.paths);
             referenceComparison ??= comparisons[current.version].full;
             return comparisons;
         }, Object.create(null));
         const vscode = vscodeEntries.slice(1).reduce<Record<string, Comparison>>((comparisons, current) => {
+            this.logWork(current.path);
             comparisons[current.version] = Parser.compareVscodeToVscode(referenceComparison, current.path);
             return comparisons;
         }, Object.create(null));
@@ -38,5 +40,9 @@ export class Comparator {
             vscode,
             vscodeReferenceVersion: vscodeReferenceEntry.version,
         };
+    }
+
+    static logWork(path: string): void {
+        console.log(`⚙️  Analyzing ${path}...`);
     }
 }
