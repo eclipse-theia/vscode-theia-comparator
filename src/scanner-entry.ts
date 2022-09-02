@@ -8,11 +8,8 @@
 * SPDX-License-Identifier: EPL-2.0
 **********************************************************************/
 
-import { Parser } from './parser';
-
 export class ScannerEntry {
-    path?: string;
+    path: string;
     paths?: string[];
     version: string;
-    parser?: Parser;
 }
