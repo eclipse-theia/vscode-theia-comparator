@@ -23,7 +23,6 @@ async function init() {
     const theiaEntries = await new GrabTheiaVersions().grab();
     const vsCodeEntries = await new GrabVSCodeVersions().grab();
 
-    console.log('⚙️  Running comparisons...');
     const comparisons = Comparator.compare(vsCodeEntries, theiaEntries);
 
     // Parse additional information

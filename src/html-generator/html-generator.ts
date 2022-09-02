@@ -31,7 +31,7 @@ export class HTMLGenerator {
 
         const topRowProps = { class: 'top' };
 
-        const firstRow = new TR({ style: 'position: sticky; top: 0; z-index: 1000' },
+        const firstRow = new TR({ style: 'position: sticky; top: -1; z-index: 1000' },
             filterComponent,
             ...Object.keys(comparisons.theia).map(version => new TH(topRowProps, new TextNode(`Theia ${version}`))),
             new TH(topRowProps, new TextNode(`VSCode ${comparisons.vscodeReferenceVersion}`)),
