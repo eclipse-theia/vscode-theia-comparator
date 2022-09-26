@@ -123,7 +123,7 @@ const updateSuccessValue = (successes: Array<SupportLevels>, index: number, newV
     if (current === SupportLevels.Partial || current === newValue) { return; }
     if (current === undefined) {
         successes[index] = newValue;
-    } else if (current === SupportLevels.Full) {
+    } else if (current === SupportLevels.Full || newValue === SupportLevels.Full) {
         successes[index] = SupportLevels.Partial;
     } else {
         successes[index] = Math.max(current, newValue);
