@@ -18,7 +18,7 @@ import { AbstractVersionGrabber } from './abstract-version-grabber';
 
 export class GrabTheiaVersions extends AbstractVersionGrabber {
 
-    static readonly THEIA_URL_PATTERN = 'https://raw.githubusercontent.com/theia-ide/theia/${VERSION}/packages/plugin/src/theia.d.ts';
+    static readonly THEIA_URL_PATTERN = 'https://raw.githubusercontent.com/eclipse-theia/theia/${VERSION}/packages/plugin/src/theia.d.ts';
 
     private readonly content = new Content();
     protected readonly argumentPrefix = 'theia';
@@ -28,7 +28,7 @@ export class GrabTheiaVersions extends AbstractVersionGrabber {
     protected async grabVersionsFromRemote(): Promise<string[]> {
         console.log('🔍 Searching on GitHub for tagged Theia versions...');
         const query = `{
-    repository(owner: "theia-ide", name: "theia") {
+    repository(owner: "eclipse-theia", name: "theia") {
       refs(refPrefix: "refs/tags/", last: 15, orderBy: {field: TAG_COMMIT_DATE, direction: ASC}) {
         edges {
           node {
