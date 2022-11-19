@@ -360,6 +360,15 @@ tests:
   createTestController: 
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10669">#10669</a>'
 
+extensions:
+  _note: '<a href="https://github.com/eclipse-theia/theia/pull/11887">#11887</a>'
+  all:
+    _note: '<a href="https://github.com/eclipse-theia/theia/pull/11887">#11887</a>'
+  getExtension:
+    _note: '<a href="https://github.com/eclipse-theia/theia/pull/11887">#11887</a>'
+  onDidChange:
+    _note: '<a href="https://github.com/eclipse-theia/theia/pull/11887">#11887</a>'
+
 languages:
   registerEvaluatableExpressionProvider:
     _note: '<a href="https://github.com/eclipse-theia/theia/issues/10027">#10027</a>'
