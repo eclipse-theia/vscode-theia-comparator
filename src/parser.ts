@@ -139,6 +139,7 @@ export class Parser {
                         failures[key] = SupportLevels.Stubbed;
                     } else {
                         let isCompatible;
+                        let isUndefinedVsOptionalCase = false;
                         // Is a function or method with several overload declarations - TS will automatically merge declarations, so to get extra detail, we fall back to text
                         if ((ts.isFunctionDeclaration(target.node) || ts.isMethodDeclaration(target.node)) && target.type.symbol.declarations.length > 1) {
                             const targetDeclarations = target.type.symbol.declarations.map(node => extractTextWithoutComments(node));
@@ -148,16 +149,17 @@ export class Parser {
                             const isTheiaAssignableToVscode = checker.isTypeAssignableTo(correspondent.type, target.type);
                             const isVSCodeAssignableToTheia = checker.isTypeAssignableTo(target.type, correspondent.type);
                             isCompatible = (isTheiaAssignableToVscode && isVSCodeAssignableToTheia) || areTextuallyIdentical(target.node, correspondent.node);
+                            isUndefinedVsOptionalCase = isUndefinedOptionalCase(target.node, correspondent.node);
                         }
-                        result[key] = isCompatible ? SupportLevels.Full : SupportLevels.Partial;
-                        if (!isCompatible) {
+                        result[key] = (!isUndefinedVsOptionalCase) ? SupportLevels.Full : SupportLevels.Partial;
+                        if (isUndefinedVsOptionalCase) {
                             failures[key] = SupportLevels.Partial;
                         }
                     }
                 } else if (isType(target)) {
                     const value = correspondent ? SupportLevels.Partial : SupportLevels.None;
-                    result[key] = value;
-                    failures[key] = value;
+                    // result[key] = value;
+                    // failures[key] = value;
                 } else {
                     const newFailures = Object.create(null);
                     const applicableCorrespondent = !correspondent || isType(correspondent) ? Object.create(null) : correspondent;
@@ -196,6 +198,22 @@ function areTextuallyIdentical(one: NamedDeclarations, other: NamedDeclarations)
     return oneText === otherText;
 }
 
+function isUndefinedOptionalCase(one: NamedDeclarations, other: NamedDeclarations): boolean {
+    const oneText = extractTextWithoutComments(one); const otherText = extractTextWithoutComments(other);
+
+    if (areTextuallyIdentical(one, other))
+        return false;
+    if ((oneText.includes('undefined') && otherText.includes('?'))) {
+        const name = getName(one);
+        console.log(`${name}`);
+        console.log(`   ${oneText}`);
+        console.log(`   ${otherText}`);
+        console.log('-------')
+        return true;
+    }
+    return false;
+}
+
 function extractTextWithoutComments(node: ts.Node): string {
     return node.getChildren()
         .map(child => {
@@ -208,6 +226,9 @@ function extractTextWithoutComments(node: ts.Node): string {
             const candidate = child.getFullText().slice(child.getLeadingTriviaWidth()).trim();
             return candidate;
         })
-        .join('')
-        .replace(/\s/g, '');
+        .join(' ')
+        // .replace(/\s+/g, ' ');
+        .replace(/(\W)\s+(\W)/g, '$1$2')
+        .replace(/(\w)\s+(\W)/g, '$1$2')
+        .replace(/(\W)\s+(\w)/g, '$1$2');
 }

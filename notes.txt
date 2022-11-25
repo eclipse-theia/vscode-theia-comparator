@@ -1,0 +1,89 @@
+
+breakpoint parser.ts L:81
+
+console.log(VSCode.SignatureHelpContext.triggerCharacter.node.type)
+undefined
+NodeObject {pos: 143666, end: 143685, flags: 16777216, modifierFlagsCache: 0, transformFlags: 1, …}
+end: 143685
+flags: 16777216
+id: 902
+kind: 187
+modifierFlagsCache: 0
+parent: NodeObject {pos: 143409, end: 143686, flags: 16777216, modifierFlagsCache: 536870976, transformFlags: 1, …}
+pos: 143666
+transformFlags: 1
+types: (2) [TokenObject, TokenObject, pos: 143666, end: 143685, hasTrailingComma: false, transformFlags: 1]
+0: TokenObject {pos: 143666, end: 143673, flags: 16777216, modifierFlagsCache: 0, transformFlags: 1, …}
+end: 143673
+flags: 16777216
+kind: 150
+modifierFlagsCache: 0
+parent: NodeObject {pos: 143666, end: 143685, flags: 16777216, modifierFlagsCache: 0, transformFlags: 1, …}
+pos: 143666
+transformFlags: 1
+[[Prototype]]: TokenOrIdentifierObject
+1: TokenObject {pos: 143675, end: 143685, flags: 16777216, modifierFlagsCache: 0, transformFlags: 1, …}
+end: 143685
+flags: 16777216
+kind: 153
+modifierFlagsCache: 0
+parent: NodeObject {pos: 143666, end: 143685, flags: 16777216, modifierFlagsCache: 0, transformFlags: 1, …}
+pos: 143675
+transformFlags: 1
+[[Prototype]]: TokenOrIdentifierObject
+end: 143685
+hasTrailingComma: false
+pos: 143666
+transformFlags: 1
+length: 2
+[[Prototype]]: Array(0)
+[[Prototype]]: Object
+[[Prototype]]: Object
+
+
+
+console.log(Theia.SignatureHelpContext.triggerCharacter.node.type)
+undefined
+TokenObject {pos: 279223, end: 279230, flags: 16777216, modifierFlagsCache: 0, transformFlags: 1, …}
+end: 279230
+flags: 16777216
+kind: 150
+modifierFlagsCache: 0
+parent: NodeObject {pos: 278923, end: 279231, flags: 16777216, modifierFlagsCache: 536870976, transformFlags: 1, …}
+pos: 279223
+transformFlags: 1
+[[Prototype]]: TokenOrIdentifierObject
+
+
+-----------
+
+breakpoint parser.ts L 148
+
+console.log(correspondent.type)
+undefined
+TypeObject {checker: {…}, flags: 4, id: 15, intrinsicName: 'string', objectFlags: 0}
+checker: {getNodeCount: ƒ, getIdentifierCount: ƒ, getSymbolCount: ƒ, getTypeCount: ƒ, getInstantiationCount: ƒ, …}
+flags: 4
+id: 15
+intrinsicName: 'string'
+objectFlags: 0
+typeArguments: ƒ () {\n                if (ts.getObjectFlags(this) & 4 /* ObjectFlags.Reference */) {\n                    return this.checker.getTypeArguments(this);\n                }\n                return undefined;\n            }
+[[Prototype]]: Object
+
+
+
+console.log(target.type)
+undefined
+TypeObject {checker: {…}, flags: 4, id: 15, intrinsicName: 'string', objectFlags: 0}
+checker: {getNodeCount: ƒ, getIdentifierCount: ƒ, getSymbolCount: ƒ, getTypeCount: ƒ, getInstantiationCount: ƒ, …}
+flags: 4
+id: 15
+intrinsicName: 'string'
+objectFlags: 0
+typeArguments: ƒ () {\n                if (ts.getObjectFlags(this) & 4 /* ObjectFlags.Reference */) {\n                    return this.checker.getTypeArguments(this);\n                }\n                return undefined;\n            }
+[[Prototype]]: Object
+
+
+
+
+
