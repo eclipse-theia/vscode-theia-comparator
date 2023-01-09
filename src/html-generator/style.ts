@@ -61,7 +61,7 @@ th.left.depth-2 {
 }
 
 th.left.depth-3 {
-	padding:left: 2.8rem;
+	padding-left: 2.8rem;
 	font-weight: normal;
 }
 
