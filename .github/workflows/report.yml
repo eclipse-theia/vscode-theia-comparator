@@ -1,5 +1,6 @@
 name: Generate and publish report
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
