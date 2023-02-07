@@ -21,9 +21,9 @@ export class GrabVSCodeVersions extends AbstractVersionGrabber {
     static readonly VSCODE_URL_PATTERN_PRE_1_63 = 'https://raw.githubusercontent.com/Microsoft/vscode/${VERSION}/src/vs/vscode.d.ts';
     static readonly VSCODE_URL_PATTERN = 'https://raw.githubusercontent.com/Microsoft/vscode/${VERSION}/src/vscode-dts/vscode.d.ts';
     // Version that is officially supported
-    static readonly CURRENT_REFERENCE_VERSION = '1.55.2';
+    static readonly CURRENT_REFERENCE_VERSION = '1.68.1';
     // Target version that will be officially supported next
-    static readonly CURRENT_REFERENCE_TARGET_VERSION = '1.64.2';
+    static readonly CURRENT_REFERENCE_TARGET_VERSION = '1.70.2';
     protected readonly argumentPrefix = 'vscode';
     protected readonly displayName = 'VSCode';
     protected readonly primaryBranchName = 'main';
