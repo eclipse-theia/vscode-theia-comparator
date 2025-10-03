@@ -18,19 +18,16 @@ import { AbstractVersionGrabber } from './abstract-version-grabber';
 
 export class GrabVSCodeVersions extends AbstractVersionGrabber {
 
-    static readonly VSCODE_URL_PATTERN_PRE_1_63 = 'https://raw.githubusercontent.com/Microsoft/vscode/${VERSION}/src/vs/vscode.d.ts';
     static readonly VSCODE_URL_PATTERN = 'https://raw.githubusercontent.com/Microsoft/vscode/${VERSION}/src/vscode-dts/vscode.d.ts';
     // Version that is officially supported
-    static readonly CURRENT_REFERENCE_VERSION = '1.77.0';
-    // Target version that will be officially supported next
-    static readonly CURRENT_REFERENCE_TARGET_VERSION = '1.78.0';
+    static readonly CURRENT_REFERENCE_VERSION = '1.104.0';
     protected readonly argumentPrefix = 'vscode';
     protected readonly displayName = 'VSCode';
     protected readonly primaryBranchName = 'main';
 
     private readonly content = new Content();
 
-    // grab latest 6 VSCode versions
+    // grab latest 4 VSCode versions
     protected async grabVersionsFromRemote(): Promise<string[]> {
         console.log('🔍 Searching on GitHub for tagged VSCode versions...');
         const query = `{
@@ -68,13 +65,23 @@ export class GrabVSCodeVersions extends AbstractVersionGrabber {
         // reverse order
         const edges = (data as any).repository.refs.edges.reverse();
 
-        // add only if changing major versions
+        // add only if changing major.minor versions
+        const versionRegex = /^(\d+)\.(\d+)\.(\d+)$/;
         let currVersion = edges[0].node.name;
         const versions = [currVersion];
+        const currMatch = currVersion.match(versionRegex);
+        let currMajorMinor = currMatch ? `${currMatch[1]}.${currMatch[2]}` : '';
+
         edges.forEach(element => {
-            if (element.node.name.substring(0, 4) !== currVersion.substring(0, 4)) {
-                currVersion = element.node.name;
+            const versionName = element.node.name;
+            const match = versionName.match(versionRegex);
+            const majorMinor = match ? `${match[1]}.${match[2]}` : '';
+
+            if (majorMinor && majorMinor !== currMajorMinor) {
+                currVersion = versionName;
                 versions.push(currVersion);
+                const newMatch = currVersion.match(versionRegex);
+                currMajorMinor = newMatch ? `${newMatch[1]}.${newMatch[2]}` : '';
             }
         });
 
@@ -84,12 +91,8 @@ export class GrabVSCodeVersions extends AbstractVersionGrabber {
         // add main version
         versions.unshift('main');
 
-        // add current reference target version
-        versions.push(GrabVSCodeVersions.CURRENT_REFERENCE_TARGET_VERSION);
-
         // add current reference version
         versions.push(GrabVSCodeVersions.CURRENT_REFERENCE_VERSION);
-
         return versions;
     }
 
@@ -100,26 +103,12 @@ export class GrabVSCodeVersions extends AbstractVersionGrabber {
                 const absolute = path.resolve(relativePathFromCLI);
                 return (await fs.pathExists(absolute)) ? [{ version: 'local', path: absolute }] : undefined;
             }
-            const relativeAfter163 = path.resolve(relativePathFromCLI, 'src', 'vscode-dts', 'vscode.d.ts');
-            if (await fs.pathExists(relativeAfter163)) {
-                return [{ version: 'local', path: relativeAfter163 }];
-            }
-            const relativeBefore163 = path.resolve(relativePathFromCLI, 'src', 'vs', 'vscode.d.ts');
-            if (await fs.pathExists(relativeBefore163)) {
-                return [{ version: 'local', path: relativeBefore163 }];
-            }
         }
     }
 
     protected async versionToEntry(version: string): Promise<ScannerEntry> {
         const filePath = path.resolve(__dirname, `vscode-${version}.d.ts`);
-        // The repository location of the api definition file changed with VSCode 1.63
-        const major = parseInt(version.split('.')[0]);
-        const minor = parseInt(version.split('.')[1]);
-        const urlPattern = major === 1 && minor < 63
-            ? GrabVSCodeVersions.VSCODE_URL_PATTERN_PRE_1_63
-            : GrabVSCodeVersions.VSCODE_URL_PATTERN;
-        const url = urlPattern.replace('${VERSION}', version);
+        const url = GrabVSCodeVersions.VSCODE_URL_PATTERN.replace('${VERSION}', version);
         const content = await this.content.get(url);
         await fs.writeFile(filePath, content);
         return { path: filePath, version };
