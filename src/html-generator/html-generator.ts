@@ -11,7 +11,7 @@
 import { Infos } from '../infos';
 import { VersionComparisons } from '../comparator';
 import { Comparison, SupportLevels } from '../parser';
-import { filterComponent, HTML, MetadataColumn, NamespaceRow, Renderable, Row, Tag, TD, TextNode, TH, theiaColumn, TR, VSCodeColumn } from './components';
+import { filterComponent, HTML, MetadataColumn, NamespaceRow, Renderable, Row, Tag, TextNode, TH, theiaColumn, TR, VSCodeColumn } from './components';
 import { styles } from './style';
 import { script } from './script';
 import { retrieveValue } from '../recursive-record';

@@ -17,30 +17,30 @@
     "compare-vscode-theia": "./lib/index.js"
   },
   "dependencies": {
-    "fs-extra": "^10.1.0",
-    "graphql": "^16.5.0",
+    "fs-extra": "^11.2.0",
+    "graphql": "^16.9.0",
     "graphql-request": "^4.3.0",
-    "typescript": "^4.7.4",
+    "typescript": "^5.7.0",
     "untildify": "^4.0.0",
-    "yaml": "^2.1.1"
+    "yaml": "^2.7.0"
   },
   "devDependencies": {
-    "@types/node": "^16.0.0",
+    "@types/node": "^22.0.0",
     "@types/untildify": "^4.0.0",
-    "rimraf": "^3.0.2",
-    "tslint": "^6.1.3",
-    "typescript-formatter": "^7.2.2"
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "rimraf": "^5.0.0",
+    "typescript-eslint": "^8.0.0"
   },
   "scripts": {
-    "prepare": "yarn run clean && yarn run build",
+    "prepare": "npm run clean && npm run build",
     "clean": "rimraf lib",
-    "format-code": "tsfmt -r",
+    "lint": "eslint src/",
+    "lint:fix": "eslint --fix src/",
     "compile": "tsc",
     "watch": "tsc -watch",
-    "tslint-fix": "tslint --fix --project .",
-    "tslint": "tslint --project .",
-    "build": "yarn run format-code && yarn run tslint-fix && yarn run tslint && yarn run compile",
-    "ci": "yarn run tslint && yarn run compile",
+    "build": "npm run lint:fix && npm run compile",
+    "ci": "npm run lint && npm run compile",
     "generate": "node lib/index.js"
   }
 }
