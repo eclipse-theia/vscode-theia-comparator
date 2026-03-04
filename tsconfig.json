@@ -1,19 +1,18 @@
 {
     "compilerOptions": {
         "strict": false,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "downlevelIteration": true,
         "module": "commonjs",
         "moduleResolution": "node",
-        "target": "es5",
+        "target": "ES2022",
         "lib": [
-            "es6",
-            "dom"
+            "ES2022",
+            "DOM"
         ],
         "sourceMap": true,
         "rootDir": "src",
-        "outDir": "lib"
+        "outDir": "lib",
+        "esModuleInterop": true,
+        "skipLibCheck": true
     },
     "include": [
         "src"

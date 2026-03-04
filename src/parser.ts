@@ -8,8 +8,6 @@
 * SPDX-License-Identifier: EPL-2.0
 **********************************************************************/
 
-/* tslint:disable */
-import { type } from 'os';
 import * as ts from 'typescript';
 import { RecursiveRecord } from './recursive-record';
 
@@ -200,7 +198,7 @@ function extractTextWithoutComments(node: ts.Node): string {
     return node.getChildren()
         .map(child => {
             if (ts.isJSDoc(child)) {
-                return ''
+                return '';
             }
             if (child.getChildCount() > 0) {
                 return extractTextWithoutComments(child);

@@ -1,16 +1,39 @@
-name: Build code for PRs
-on: pull_request
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - "**/*.md"
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - "**/*.md"
+
+permissions:
+  contents: read
 
 jobs:
-  api-report-master:
-    runs-on: ubuntu-latest
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup node
-        uses: actions/setup-node@v2
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
-          node-version: 16
-      - name: Build
+          node-version: 22.x
+
+      - name: Install and Build
         run: |
-          yarn --frozen-lockfile
-          yarn run ci
+          npm ci
+          npm run build
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=moderate
