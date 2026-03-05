@@ -16,6 +16,11 @@ export class Content {
         return new Promise((resolve, reject) => {
 
             https.get(url, resp => {
+                if (resp.statusCode && (resp.statusCode < 200 || resp.statusCode >= 300)) {
+                    reject(new Error(`HTTP ${resp.statusCode} for ${url}`));
+                    resp.resume();
+                    return;
+                }
                 let data = '';
                 resp.on('data', chunk => {
                     data += chunk;
@@ -23,7 +28,7 @@ export class Content {
                 resp.on('end', () => {
                     resolve(data);
                 });
-            }).on('"error', err => {
+            }).on('error', err => {
                 reject(err);
             });
         });

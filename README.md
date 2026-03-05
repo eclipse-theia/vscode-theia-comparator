@@ -55,8 +55,10 @@ Example output:
  ⚙️  Parsing additional information from infos.yml...
  ⚙️  Generating HTML report...
  ✍️  HTML status written at /home/user/Git/vscode-theia-comparator/out/status.html
-    ✍️  HTML status written at /home/user/Git/vscode-theia-comparator/out/status.html
+ 🔗 Open in browser: file:///home/user/Git/vscode-theia-comparator/out/status.html
  ```
+
+ The generated report is written to `out/status.html`. The tool prints a clickable `file://` URI you can open directly in your browser.
 
 ## Additional CLI options
 
