@@ -19,15 +19,36 @@ import { AbstractVersionGrabber } from './abstract-version-grabber';
 export class GrabVSCodeVersions extends AbstractVersionGrabber {
 
     static readonly VSCODE_URL_PATTERN = 'https://raw.githubusercontent.com/Microsoft/vscode/${VERSION}/src/vscode-dts/vscode.d.ts';
-    // Version that is officially supported
-    static readonly CURRENT_REFERENCE_VERSION = '1.104.0';
+    static readonly THEIA_API_URL_PATTERN = 'https://raw.githubusercontent.com/eclipse-theia/theia/${VERSION}/dev-packages/application-package/src/api.ts';
+
     protected readonly argumentPrefix = 'vscode';
     protected readonly displayName = 'VSCode';
     protected readonly primaryBranchName = 'main';
 
     private readonly content = new Content();
 
-    // grab latest 4 VSCode versions
+    /** The VS Code version that Theia's latest release officially targets. */
+    supportedVersion: string | undefined;
+
+    /**
+     * Resolve the VS Code supported version from a Theia version's api.ts.
+     */
+    async resolveSupportedVersion(theiaVersion: string): Promise<void> {
+        const url = GrabVSCodeVersions.THEIA_API_URL_PATTERN.replace('${VERSION}', theiaVersion);
+        try {
+            const apiContent = await this.content.get(url) as string;
+            const match = apiContent.match(/DEFAULT_SUPPORTED_API_VERSION\s*=\s*'([^']+)'/);
+            if (match) {
+                this.supportedVersion = match[1];
+                console.log(`📌 Resolved VS Code supported version ${this.supportedVersion} from Theia ${theiaVersion}`);
+                return;
+            }
+        } catch {
+            // fall through
+        }
+        console.warn(`⚠️  Could not resolve VS Code supported version from Theia ${theiaVersion}`);
+    }
+
     protected async grabVersionsFromRemote(): Promise<string[]> {
         console.log('🔍 Searching on GitHub for tagged VSCode versions...');
         const query = `{
@@ -62,38 +83,50 @@ export class GrabVSCodeVersions extends AbstractVersionGrabber {
         });
         const data = await graphQLClient.request(query);
 
-        // reverse order
         const edges = (data as any).repository.refs.edges.reverse();
-
-        // add only if changing major.minor versions
         const versionRegex = /^(\d+)\.(\d+)\.(\d+)$/;
-        let currVersion = edges[0].node.name;
-        const versions = [currVersion];
-        const currMatch = currVersion.match(versionRegex);
-        let currMajorMinor = currMatch ? `${currMatch[1]}.${currMatch[2]}` : '';
 
-        edges.forEach(element => {
-            const versionName = element.node.name;
-            const match = versionName.match(versionRegex);
-            const majorMinor = match ? `${match[1]}.${match[2]}` : '';
+        // All valid tags, newest first
+        const allTags: string[] = [];
+        for (const edge of edges) {
+            const name: string = edge.node.name;
+            if (versionRegex.test(name)) { allTags.push(name); }
+        }
 
-            if (majorMinor && majorMinor !== currMajorMinor) {
-                currVersion = versionName;
-                versions.push(currVersion);
-                const newMatch = currVersion.match(versionRegex);
-                currMajorMinor = newMatch ? `${newMatch[1]}.${newMatch[2]}` : '';
+        // Deduplicate to one per major.minor (for older versions)
+        const seen = new Set<string>();
+        const deduped: string[] = [];
+        for (const tag of allTags) {
+            const m = tag.match(versionRegex)!;
+            const majorMinor = `${m[1]}.${m[2]}`;
+            if (!seen.has(majorMinor)) {
+                seen.add(majorMinor);
+                deduped.push(tag);
             }
-        });
+        }
 
-        // keep only the last 4 versions
-        versions.length = 4;
+        if (!this.supportedVersion) {
+            return ['main', ...deduped.slice(0, 6)];
+        }
 
-        // add main version
-        versions.unshift('main');
+        const parseVersion = (v: string) => {
+            const m = v.match(/^(\d+)\.(\d+)\.(\d+)/);
+            return m ? parseInt(m[1]) * 1000000 + parseInt(m[2]) * 1000 + parseInt(m[3]) : 0;
+        };
+        const supVersion = parseVersion(this.supportedVersion);
 
-        // add current reference version
-        versions.push(GrabVSCodeVersions.CURRENT_REFERENCE_VERSION);
-        return versions;
+        // Newer: all individual tags strictly newer than supported (including same major.minor with higher patch)
+        const newer = allTags.filter(t => parseVersion(t) > supVersion);
+        // Older: deduplicated, 3 entries with lower major.minor
+        const parseMajorMinor = (v: string) => {
+            const m = v.match(/^(\d+)\.(\d+)/);
+            return m ? parseInt(m[1]) * 10000 + parseInt(m[2]) : 0;
+        };
+        const supMajorMinor = parseMajorMinor(this.supportedVersion);
+        const older = deduped.filter(t => parseMajorMinor(t) < supMajorMinor).slice(0, 3);
+
+        // main first (comparator uses [0] as the comparison baseline), then newer, supported, older
+        return ['main', ...newer, this.supportedVersion, ...older];
     }
 
     protected async getPathFromCLI(): Promise<[ScannerEntry] | undefined> {

@@ -20,8 +20,15 @@ import { parseInfos } from './infos';
 async function init() {
 
     // Find or download the declaration files for Theia and VSCode
-    const theiaEntries = await new GrabTheiaVersions().grab();
-    const vsCodeEntries = await new GrabVSCodeVersions().grab();
+    const theiaGrabber = new GrabTheiaVersions();
+    const theiaEntries = await theiaGrabber.grab();
+
+    // Resolve the VS Code supported version from the latest tagged Theia release
+    const vscodeGrabber = new GrabVSCodeVersions();
+    const theiaVersions = await theiaGrabber.grabVersions();
+    const latestTheiaTag = theiaVersions.find(v => v.startsWith('v')) ?? theiaVersions[0];
+    await vscodeGrabber.resolveSupportedVersion(latestTheiaTag);
+    const vsCodeEntries = await vscodeGrabber.grab();
 
     const comparisons = Comparator.compare(vsCodeEntries, theiaEntries);
 
@@ -32,11 +39,13 @@ async function init() {
 
     // Generate HTML output
     console.log('⚙️  Generating HTML report...');
-    const content = HTMLGenerator.generate(comparisons, infos);
+    const content = HTMLGenerator.generate(comparisons, infos, vscodeGrabber.supportedVersion);
     await fs.ensureDir(path.resolve(__dirname, '../out'));
     const outputFile = path.resolve(__dirname, '../out', 'status.html');
     fs.writeFileSync(outputFile, content);
+    const fileUri = `file://${outputFile}`;
     console.log(`✍️  HTML status written at ${outputFile}`);
+    console.log(`🔗 Open in browser: ${fileUri}`);
 }
 
 if (!process.env.GITHUB_TOKEN) {

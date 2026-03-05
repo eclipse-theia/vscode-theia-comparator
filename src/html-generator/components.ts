@@ -16,16 +16,29 @@ export interface Renderable {
     render(): string;
 }
 
+function escapeHtml(str: string): string {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 export class TextNode implements Renderable {
     constructor(private text: string) { }
     render(): string {
-        return this.text;
+        return escapeHtml(this.text);
+    }
+}
+
+export class RawHTMLNode implements Renderable {
+    constructor(private html: string) { }
+    render(): string {
+        return this.html;
     }
 }
 
 export class Tag implements Renderable {
     private children: Renderable[];
-    constructor(private name: string, private properties: Record<string, string> = Object.create(null), ...children: Renderable[]) {
+    protected properties: Record<string, string>;
+    constructor(private name: string, properties: Record<string, string> = Object.create(null), ...children: Renderable[]) {
+        this.properties = properties;
         this.children = children;
     }
 
@@ -37,8 +50,12 @@ export class Tag implements Renderable {
         this.children.push(child);
     }
 
+    setProperty(key: string, value: string): void {
+        this.properties[key] = value;
+    }
+
     render(): string {
-        return `<${this.name} ${Object.entries(this.properties).map(([key, value]) => `${key}="${value}"`).join(' ')}>${this.children.map(child => child.render()).join('')}</${this.name}>`;
+        return `<${this.name} ${Object.entries(this.properties).map(([key, value]) => `${escapeHtml(key)}="${escapeHtml(value)}"`).join(' ')}>${this.children.map(child => child.render()).join('')}</${this.name}>`;
     }
 
     addClass(className: string): void {
@@ -72,13 +89,13 @@ export class Row extends TR {
     constructor(name: string, depth: number, ...children: Renderable[]) {
         const text = new TextNode(name);
         const firstColumn = new TH({ class: 'left depth-' + depth }, text);
-        super({}, firstColumn, ...children);
+        super({ 'data-name': name.toLowerCase() }, firstColumn, ...children);
     }
 }
 
 export class NamespaceRow extends TR {
     constructor(name: string, columns: number) {
-        super({}, new TD({ class: 'neutral', colspan: columns.toString() }, new TextNode(`namespace/${name}`)), );
+        super({ 'data-namespace': 'true' }, new TD({ class: 'neutral', colspan: columns.toString() }, new TextNode(`namespace/${name}`)));
     }
 }
 
@@ -117,24 +134,77 @@ export class HTML extends Tag {
     }
 }
 
-export const filterComponent = new TH({ class: 'top' },
-    new Tag('form', { id: 'report-filter-selector-form', style: 'display: flex; justify-content: space-around; align-items: center; flex-flow: row nowrap; height: 100%; width: 100%;' },
-        new Tag('label', { for: 'full-report-button' },
-            new TextNode('Full'),
-            new Tag('input', { type: 'radio', class: 'report-filter-selector', name: 'report-filter-selector', id: 'full-report-button', value: 'full', checked: 'true', style: 'margin-left: 8px;' })
-        ),
-        new Tag('label', { for: 'filtered-report-button' },
-            new TextNode('Filtered'),
-            new Tag('input', { type: 'radio', class: 'report-filter-selector', name: 'report-filter-selector', id: 'filtered-report-button', value: 'filtered', style: 'margin-left: 8px;' })
-        ),
-    )
-);
+export const nameColumnHeader = new TH({ class: 'top' }, new TextNode('API'));
+
+function createDropdown(id: string, buttonLabel: string, items: { id: string; label: string; attrs?: Record<string, string> }[]): Tag {
+    const wrapper = new Tag('div', { class: 'dropdown', id });
+    wrapper.appendChild(new Tag('button', { class: 'dropdown-btn', type: 'button' }, new TextNode(buttonLabel + ' ▾')));
+    const menu = new Tag('div', { class: 'dropdown-menu' });
+    menu.appendChild(new Tag('label', { class: 'dropdown-item dropdown-toggle-all' },
+        new Tag('input', { type: 'checkbox', checked: 'true', class: `${id}-toggle-all` }),
+        new TextNode(' All')
+    ));
+    menu.appendChild(new Tag('hr', { class: 'dropdown-divider' }));
+    for (const item of items) {
+        const inputProps: Record<string, string> = { type: 'checkbox', checked: 'true', class: `${id}-item`, ...item.attrs };
+        menu.appendChild(new Tag('label', { class: 'dropdown-item' },
+            new Tag('input', inputProps),
+            new TextNode(` ${item.label}`)
+        ));
+    }
+    wrapper.appendChild(menu);
+    return wrapper;
+}
+
+export function createToolbar(versionLabels: string[]): Tag {
+    const toolbar = new Tag('div', { id: 'toolbar' });
+
+    // Search
+    toolbar.appendChild(new Tag('div', { class: 'toolbar-group' },
+        new Tag('input', { type: 'text', id: 'api-search', placeholder: 'Filter by API name...' })
+    ));
+
+    // Status filter dropdown
+    toolbar.appendChild(createDropdown('status-dropdown', 'Status', [
+        { id: 'status-success', label: 'Supported', attrs: { 'data-status': 'success' } },
+        { id: 'status-danger', label: 'Unsupported', attrs: { 'data-status': 'danger' } },
+        { id: 'status-warning', label: 'Partial', attrs: { 'data-status': 'warning' } },
+        { id: 'status-neutral', label: 'Stubbed', attrs: { 'data-status': 'neutral' } },
+    ]));
+
+    // Columns dropdown
+    const allColumns = [...versionLabels, 'Note'];
+    toolbar.appendChild(createDropdown('columns-dropdown', 'Columns',
+        allColumns.map((label, i) => ({
+            id: `col-toggle-${i + 1}`,
+            label,
+            attrs: { 'data-col-index': (i + 1).toString() },
+        }))
+    ));
+
+    // Results counter
+    toolbar.appendChild(new Tag('div', { class: 'toolbar-group toolbar-results' },
+        new Tag('span', { id: 'results-count' })
+    ));
+
+    return toolbar;
+}
+
+export function supportLevelToClass(value: SupportLevels | undefined): string {
+    switch (value) {
+        case SupportLevels.Full: return 'success';
+        case SupportLevels.None:
+        case undefined: return 'danger';
+        case SupportLevels.Stubbed: return 'neutral';
+        default: return 'warning';
+    }
+}
 
 export class MetadataColumn extends TD {
     constructor(notes: Infos, ...path: string[]) {
         const value = retrieveValue(notes, [...path, '_note']) ?? retrieveValue(notes, ['root', ...path, '_note']);
         const text = typeof value === 'string' ? value : '';
-        super({ class: 'note' }, new TextNode(text));
+        super({ class: 'note' }, new RawHTMLNode(text));
     }
 }
 
