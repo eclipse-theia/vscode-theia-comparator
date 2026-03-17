@@ -75,12 +75,30 @@ const scriptCode = `
 
 	// --- Status filter ---
 	const statusItems = Array.from(document.querySelectorAll('#status-dropdown .dropdown-item input[data-status]'));
+	// Map col-index to its checkbox for quick lookup
+	const colIndexChecked = new Map();
+	function getVisibleStatuses(row) {
+		const statuses = new Set();
+		const cells = row.children;
+		for (let i = 0; i < cells.length; i++) {
+			const cell = cells[i];
+			if (!cell.classList.contains('theia')) { continue; }
+			// colIndexChecked keys are nth-child (1-based), DOM childIndex is 0-based
+			const cb = colIndexChecked.get(i + 1);
+			if (cb && !cb.checked) { continue; }
+			if (cell.classList.contains('success')) { statuses.add('success'); }
+			else if (cell.classList.contains('danger')) { statuses.add('danger'); }
+			else if (cell.classList.contains('warning')) { statuses.add('warning'); }
+			else if (cell.classList.contains('neutral')) { statuses.add('neutral'); }
+		}
+		return statuses;
+	}
 	function applyStatusFilter() {
 		const active = new Set();
 		statusItems.forEach(cb => { if (cb.checked) active.add(cb.getAttribute('data-status')); });
 		dataRows.forEach(r => {
-			const statuses = (r.getAttribute('data-statuses') || '').split(' ').filter(Boolean);
-			r.classList.toggle('hide-status', !statuses.some(s => active.has(s)));
+			const statuses = getVisibleStatuses(r);
+			r.classList.toggle('hide-status', statuses.size > 0 && !Array.from(statuses).some(s => active.has(s)));
 		});
 	}
 	statusItems.forEach(cb => cb.addEventListener('change', () => { applyStatusFilter(); applySearchFilter(); ensureParentsVisible(); updateNamespaces(); updateCount(); }));
@@ -131,7 +149,12 @@ const scriptCode = `
 	}
 
 	// --- Column toggle ---
-	const colItems = Array.from(document.querySelectorAll('#columns-dropdown .dropdown-item input'));
+	const colItems = Array.from(document.querySelectorAll('#columns-dropdown .dropdown-item input[data-col-index]'));
+	// Build col-index -> checkbox map (data-col-index is 1-based, nth-child is +1)
+	colItems.forEach(cb => {
+		const ci = parseInt(cb.getAttribute('data-col-index'), 10) + 1;
+		colIndexChecked.set(ci, cb);
+	});
 	function rebuildColRules() {
 		// Remove old column rules (tracked at end of stylesheet)
 		while (styleSheet.cssRules.length > 0 && styleSheet.cssRules[styleSheet.cssRules.length - 1].__colRule) {
@@ -148,7 +171,14 @@ const scriptCode = `
 			}
 		});
 	}
-	colItems.forEach(cb => cb.addEventListener('change', rebuildColRules));
+	colItems.forEach(cb => cb.addEventListener('change', () => {
+		rebuildColRules();
+		applyStatusFilter();
+		applySearchFilter();
+		ensureParentsVisible();
+		updateNamespaces();
+		updateCount();
+	}));
 
 	// --- Results counter ---
 	function updateCount() {
