@@ -147,6 +147,12 @@ export class Parser {
                             const isVSCodeAssignableToTheia = checker.isTypeAssignableTo(target.type, correspondent.type);
                             isCompatible = (isTheiaAssignableToVscode && isVSCodeAssignableToTheia) || areTextuallyIdentical(target.node, correspondent.node);
                         }
+                        // Type assignability doesn't account for access modifiers -
+                        // a private constructor has the same type as a public one.
+                        // Verify that Theia's visibility is at least as permissive as VSCode's.
+                        if (isCompatible && !isVisibilityCompatible(target.node, correspondent.node)) {
+                            isCompatible = false;
+                        }
                         result[key] = isCompatible ? SupportLevels.Full : SupportLevels.Partial;
                         if (!isCompatible) {
                             failures[key] = SupportLevels.Partial;
@@ -192,6 +198,27 @@ function getName(node: NamedDeclarations): string {
 function areTextuallyIdentical(one: NamedDeclarations, other: NamedDeclarations): boolean {
     const oneText = extractTextWithoutComments(one); const otherText = extractTextWithoutComments(other);
     return oneText === otherText;
+}
+
+function getVisibility(node: ts.Node): 'private' | 'protected' | 'public' {
+    if (ts.canHaveModifiers(node)) {
+        const modifiers = ts.getModifiers(node);
+        if (modifiers) {
+            for (const mod of modifiers) {
+                if (mod.kind === ts.SyntaxKind.PrivateKeyword) {return 'private';}
+                if (mod.kind === ts.SyntaxKind.ProtectedKeyword) {return 'protected';}
+            }
+        }
+    }
+    return 'public';
+}
+
+const visibilityRank = { 'private': 0, 'protected': 1, 'public': 2 } as const;
+
+function isVisibilityCompatible(vscodeNode: ts.Node, theiaNode: ts.Node): boolean {
+    const vscodeVisibility = getVisibility(vscodeNode);
+    const theiaVisibility = getVisibility(theiaNode);
+    return visibilityRank[theiaVisibility] >= visibilityRank[vscodeVisibility];
 }
 
 function extractTextWithoutComments(node: ts.Node): string {
